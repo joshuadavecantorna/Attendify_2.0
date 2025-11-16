@@ -6,7 +6,7 @@ A Laravel-based application for attendance management.
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/joshuadavecantorna/BSCS-Group_9.git
+   git clone https://github.com/joshuadavecantorna/Attendify_2.0.git
    cd attendify_v2
    ```
 
