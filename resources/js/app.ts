@@ -12,9 +12,17 @@ createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
     resolve: (name) => resolvePageComponent(`./pages/${name}.vue`, import.meta.glob<DefineComponent>('./pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
-            .use(plugin)
-            .mount(el);
+        const app = createApp({ render: () => h(App, props) });
+        
+        // Suppress known radix-vue/shadcn-vue warnings about data-* attributes
+        app.config.warnHandler = (msg, instance, trace) => {
+            if (msg.includes('onData-sidebar') || msg.includes('onData-slot')) {
+                return; // Suppress this specific warning
+            }
+            console.warn(msg, instance, trace);
+        };
+        
+        app.use(plugin).mount(el);
     },
     progress: {
         color: '#4B5563',

@@ -8,16 +8,21 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
-Route::get('dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])
-    ->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::get('reports', function () {
-    return Inertia::render('Reports');
-})->middleware(['auth', 'verified'])->name('reports');
-// Add this route ▼
-Route::get('/teacher/files', function () {
-    return view('teacher/files');
-})->name('teacher.files');
+// Redirect authenticated users to their role-specific dashboard
+Route::get('dashboard', function () {
+    $user = Auth::user();
+    
+    if (!$user) {
+        return redirect()->route('login');
+    }
+    
+    return match($user->role) {
+        'admin' => redirect()->route('admin.dashboard'),
+        'teacher' => redirect()->route('teacher.dashboard'),
+        'student' => redirect()->route('student.dashboard'),
+        default => redirect()->route('home'),
+    };
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 // Teacher Routes
 Route::middleware(['auth', 'verified'])->prefix('teacher')->name('teacher.')->group(function () {
@@ -98,6 +103,7 @@ Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->gr
 
 // Admin Routes (for non-teacher users)
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/teachers', [App\Http\Controllers\AdminController::class, 'teachers'])->name('teachers');
     Route::post('/teachers', [App\Http\Controllers\AdminController::class, 'storeTeacher'])->name('teachers.store');
     Route::put('/teachers/{id}', [App\Http\Controllers\AdminController::class, 'updateTeacher'])->name('teachers.update');

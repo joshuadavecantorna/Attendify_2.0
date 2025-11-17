@@ -94,7 +94,7 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => 'require',
+            'sslmode' => env('DB_SSLMODE', 'prefer'),
             'prepared_statements' => env('DB_PREPARED_STATEMENTS', true),
             'options' => [
                 PDO::ATTR_PERSISTENT => false,
