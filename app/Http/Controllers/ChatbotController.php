@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\OllamaService;
+use App\Services\AIQueryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -10,10 +11,12 @@ use Carbon\Carbon;
 class ChatbotController extends Controller
 {
     protected OllamaService $ollama;
+    protected AIQueryService $aiQuery;
 
-    public function __construct(OllamaService $ollama)
+    public function __construct(OllamaService $ollama, AIQueryService $aiQuery)
     {
         $this->ollama = $ollama;
+        $this->aiQuery = $aiQuery;
     }
 
     /**
@@ -58,27 +61,10 @@ class ChatbotController extends Controller
             ], 503);
         }
 
-        // Extract structured query from natural language
+        // Optionally extract structured query for debug
         $extracted = $this->ollama->extractAttendanceQuery($query);
-
-        if (!$extracted) {
-            return response()->json([
-                'success' => false,
-                'error' => 'I could not understand your question. Please try asking differently.'
-            ], 400);
-        }
-
-        // Execute query based on category
-        $category = $extracted['query_category'] ?? 'general';
-        
-        if ($category === 'classes') {
-            $result = $this->executeClassQuery($extracted, $user);
-        } elseif ($category === 'attendance') {
-            $result = $this->executeAttendanceQuery($extracted);
-        } else {
-            // General question - let AI query the database
-            $result = $this->executeGeneralQuery($query, $user);
-        }
+        // Use AIQueryService to handle the query
+        $result = $this->aiQuery->handleQuery($query, $user);
         
         // Add user context to result
         $result['current_user'] = $userName;
@@ -244,8 +230,60 @@ class ChatbotController extends Controller
     protected function executeClassQuery(array $extracted, $user): array
     {
         $queryType = $extracted['query_type'] ?? 'list_classes';
+        $className = $extracted['class_name'] ?? null;
 
         switch ($queryType) {
+            case 'count_students_in_class':
+                if (!$user) {
+                    return [
+                        'type' => 'error',
+                        'message' => 'You need to be logged in to view class information.'
+                    ];
+                }
+
+                if (!$className) {
+                    return [
+                        'type' => 'error',
+                        'message' => 'Please specify which class you want to check.'
+                    ];
+                }
+
+                // For teachers, find the class and count enrolled students
+                if ($user->role === 'teacher') {
+                    $class = DB::table('class_models')
+                        ->where('teacher_id', $user->id)
+                        ->where('is_active', true)
+                        ->where(function($query) use ($className) {
+                            $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($className) . '%'])
+                                  ->orWhereRaw('LOWER(subject) LIKE ?', ['%' . strtolower($className) . '%']);
+                        })
+                        ->first();
+
+                    if (!$class) {
+                        return [
+                            'type' => 'error',
+                            'message' => "I couldn't find a class named '{$className}' in your teaching schedule."
+                        ];
+                    }
+
+                    // Count enrolled students in this class
+                    $studentCount = DB::table('class_student')
+                        ->where('class_id', $class->id)
+                        ->where('status', 'enrolled')
+                        ->count();
+
+                    return [
+                        'type' => 'student_count',
+                        'class_name' => $class->name,
+                        'student_count' => $studentCount
+                    ];
+                }
+
+                return [
+                    'type' => 'error',
+                    'message' => 'Only teachers can view student counts in classes.'
+                ];
+
             case 'list_classes':
                 if (!$user) {
                     return [
@@ -274,9 +312,10 @@ class ChatbotController extends Controller
                         'count' => $classes->count()
                     ];
                 } elseif ($user->role === 'teacher') {
-                    $classes = DB::table('classes')
+                    $classes = DB::table('class_models')
                         ->where('teacher_id', $user->id)
-                        ->select('name', 'subject', 'schedule', 'section')
+                        ->where('is_active', true)
+                        ->select('name', 'subject', 'course', 'section', 'schedule_time', 'schedule_days')
                         ->get();
 
                     return [

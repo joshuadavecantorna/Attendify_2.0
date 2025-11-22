@@ -1,0 +1,253 @@
+{
+  "name": "Attendify Class Reminders",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Every 5 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://Attendify_2.0.test/api/n8n/upcoming-classes",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "http-get-classes",
+      "name": "Get Upcoming Classes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        450,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "N8n API Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "students",
+              "name": "students",
+              "value": "={{ $json.students }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "extract-students",
+      "name": "Extract Students",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [
+        650,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "teachers",
+              "name": "teachers",
+              "value": "={{ $json.teachers }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "extract-teachers",
+      "name": "Extract Teachers",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [
+        650,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "students",
+        "options": {}
+      },
+      "id": "split-students",
+      "name": "Split Students",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        850,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "teachers",
+        "options": {}
+      },
+      "id": "split-teachers",
+      "name": "Split Teachers",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        850,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $json.telegram_chat_id }}",
+        "text": "=🔔 *Class Reminder*\n\nHi {{ $json.name }}!\n\n📚 {{ $json.class_name }}\n⏰ Starts at {{ $json.start_time }} (in {{ $json.minutes }} minutes)\n📍 {{ $json.room }}\n👨‍🏫 Teacher: {{ $json.teacher_name }}\n\nSee you there! Don't forget your materials.",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "send-student-message",
+      "name": "Send to Student",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        1050,
+        200
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "2",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $json.telegram_chat_id }}",
+        "text": "=🔔 *Class Reminder*\n\nHi {{ $json.name }}!\n\n📚 {{ $json.class_name }}\n⏰ Starts at {{ $json.start_time }} (in {{ $json.minutes }} minutes)\n📍 {{ $json.room }}\n👥 {{ $json.enrolled_count }} students enrolled\n\nPrepare your materials and see you in class!",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "send-teacher-message",
+      "name": "Send to Teacher",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        1050,
+        400
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "2",
+          "name": "Telegram Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Every 5 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Get Upcoming Classes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Upcoming Classes": {
+      "main": [
+        [
+          {
+            "node": "Extract Students",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract Teachers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Students": {
+      "main": [
+        [
+          {
+            "node": "Split Students",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Teachers": {
+      "main": [
+        [
+          {
+            "node": "Split Teachers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Students": {
+      "main": [
+        [
+          {
+            "node": "Send to Student",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Teachers": {
+      "main": [
+        [
+          {
+            "node": "Send to Teacher",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-11-18T00:00:00.000Z",
+  "versionId": "1"
+}

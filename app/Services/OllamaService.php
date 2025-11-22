@@ -109,21 +109,25 @@ class OllamaService
 
 Query Types:
 - Attendance: count_absences, count_present, count_late, list_dates, attendance_rate
-- Classes: list_classes, class_info
+- Classes: list_classes, class_info, count_students_in_class
 - General: general_question
 
 Format:
-{\"query_category\":\"attendance|classes|general\",\"student_name\":\"NAME or null\",\"query_type\":\"TYPE\",\"status\":\"STATUS or null\",\"time_period\":\"PERIOD\",\"start_date\":null,\"end_date\":null}
+{\"query_category\":\"attendance|classes|general\",\"student_name\":\"NAME or null\",\"class_name\":\"CLASS NAME or null\",\"query_type\":\"TYPE\",\"status\":\"STATUS or null\",\"time_period\":\"PERIOD\",\"start_date\":null,\"end_date\":null}
 
 Status: absent, present, late, excused
 Period: today, this_week, this_month, last_month, this_year
 
 Examples:
-'John absent October' → {\"query_category\":\"attendance\",\"student_name\":\"John\",\"query_type\":\"count_absences\",\"status\":\"absent\",\"time_period\":\"last_month\",\"start_date\":null,\"end_date\":null}
+'John absent October' → {\"query_category\":\"attendance\",\"student_name\":\"John\",\"class_name\":null,\"query_type\":\"count_absences\",\"status\":\"absent\",\"time_period\":\"last_month\",\"start_date\":null,\"end_date\":null}
 
-'list my enrolled classes' → {\"query_category\":\"classes\",\"student_name\":null,\"query_type\":\"list_classes\",\"status\":null,\"time_period\":\"this_month\",\"start_date\":null,\"end_date\":null}
+'list my enrolled classes' → {\"query_category\":\"classes\",\"student_name\":null,\"class_name\":null,\"query_type\":\"list_classes\",\"status\":null,\"time_period\":\"this_month\",\"start_date\":null,\"end_date\":null}
 
-'how many students present today' → {\"query_category\":\"attendance\",\"student_name\":null,\"query_type\":\"count_present\",\"status\":\"present\",\"time_period\":\"today\",\"start_date\":null,\"end_date\":null}
+'how many students in Life and works of Rizal' → {\"query_category\":\"classes\",\"student_name\":null,\"class_name\":\"Life and works of Rizal\",\"query_type\":\"count_students_in_class\",\"status\":null,\"time_period\":\"this_month\",\"start_date\":null,\"end_date\":null}
+
+'how many students I have in Application Development' → {\"query_category\":\"classes\",\"student_name\":null,\"class_name\":\"Application Development\",\"query_type\":\"count_students_in_class\",\"status\":null,\"time_period\":\"this_month\",\"start_date\":null,\"end_date\":null}
+
+'how many students present today' → {\"query_category\":\"attendance\",\"student_name\":null,\"class_name\":null,\"query_type\":\"count_present\",\"status\":\"present\",\"time_period\":\"today\",\"start_date\":null,\"end_date\":null}
 
 Extract:";
 
@@ -162,6 +166,18 @@ Extract:";
     {
         $currentUser = $data['current_user'] ?? null;
         $userRole = $data['user_role'] ?? null;
+        
+        // Special handling for student count in class
+        if (isset($data['type']) && $data['type'] === 'student_count') {
+            $className = $data['class_name'] ?? 'the class';
+            $count = $data['student_count'] ?? 0;
+            
+            if ($count === 0) {
+                return "There are no students enrolled in {$className} yet.";
+            }
+            
+            return "You have {$count} " . ($count === 1 ? 'student' : 'students') . " enrolled in {$className}.";
+        }
         
         // Special handling for class lists
         if (isset($data['type']) && $data['type'] === 'classes_list') {
@@ -213,6 +229,15 @@ Extract:";
             }
             
             return "I found {$count} result(s) but couldn't format the response properly.";
+        }
+
+        // Special: Count of excuse requests approved by the user
+        if (isset($data['type']) && $data['type'] === 'excuse_count') {
+            $count = $data['count'] ?? 0;
+            if ($count === 0) {
+                return "You haven't approved any excuse requests yet.";
+            }
+            return "You have approved {$count} excuse request" . ($count === 1 ? '' : 's') . ".";
         }
         
         $contextNote = $currentUser 

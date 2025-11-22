@@ -66,6 +66,11 @@ export function useChatbot() {
             const response = await axios.post<ChatResponse>('/api/chatbot/query', {
                 message: content,
                 conversation_history: conversationHistory,
+            }, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                withCredentials: true,
             });
 
             // Remove loading message
