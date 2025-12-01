@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\FilesController;
 use App\Http\Controllers\TelegramWebhookController;
-use App\Http\Controllers\N8nApiController;
+use App\Http\Controllers\Api\N8NController;
 
 // Auth user endpoint
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -30,12 +30,20 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/telegram/webhook', [TelegramWebhookController::class, 'webhook']);
 Route::get('/telegram/test', [TelegramWebhookController::class, 'test']);
 
-// n8n API endpoints (authenticated by bearer token)
-Route::prefix('n8n')->middleware('throttle:120,1')->group(function () {
-    Route::get('/upcoming-classes', [N8nApiController::class, 'upcomingClasses']);
-    Route::get('/all-classes', [N8nApiController::class, 'allClasses']);
-    Route::get('/telegram-users', [N8nApiController::class, 'telegramUsers']);
-    Route::get('/health', [N8nApiController::class, 'health']);
+// N8N Integration Routes
+Route::prefix('n8n')->group(function () {
+    
+    // Health check
+    Route::get('/health', [N8NController::class, 'healthCheck']);
+    
+    // Get all students with today's schedule (for 6am automation)
+    Route::get('/schedules/today', [N8NController::class, 'getAllTodaySchedules']);
+    
+    // Get specific student's today schedule
+    Route::get('/students/{studentId}/schedule/today', [N8NController::class, 'getStudentTodaySchedule']);
+    
+    // Update telegram chat ID
+    Route::post('/students/telegram/update', [N8NController::class, 'updateTelegramChatId']);
 });
 
 // AI Chatbot Routes

@@ -18,11 +18,14 @@ Route::get('dashboard', function () {
         return redirect()->route('login');
     }
     
+    // Use the request URL to build absolute URLs for redirects
+    $baseUrl = request()->getSchemeAndHttpHost();
+    
     return match($user->role) {
-        'admin' => redirect()->route('admin.dashboard'),
-        'teacher' => redirect()->route('teacher.dashboard'),
-        'student' => redirect()->route('student.dashboard'),
-        default => redirect()->route('home'),
+        'admin' => redirect($baseUrl . '/admin/dashboard'),
+        'teacher' => redirect($baseUrl . '/teacher/dashboard'),
+        'student' => redirect($baseUrl . '/student/dashboard'),
+        default => redirect($baseUrl),
     };
 })->middleware(['auth', 'verified'])->name('dashboard');
 

@@ -41,6 +41,19 @@ class AttendanceSession extends Model
     ];
 
     // Relationships
+    
+    /**
+     * Get the class model (alias for class() method)
+     * Used by N8N API
+     */
+    public function classModel(): BelongsTo
+    {
+        return $this->belongsTo(ClassModel::class, 'class_id');
+    }
+
+    /**
+     * Get the class (original method)
+     */
     public function class(): BelongsTo
     {
         return $this->belongsTo(ClassModel::class, 'class_id');
