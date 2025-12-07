@@ -10,14 +10,14 @@ cmds = [
 [phases.build]
 cmds = [
     "npm run build",
-    "echo 'Listing public/build directory:'",
+    "echo '=== Checking build output ==='",
     "ls -la public/build/",
-    "echo 'Listing public/build/.vite directory:'",
     "ls -la public/build/.vite/",
-    "echo 'Copying manifest...'",
+    "echo '=== Copying manifest ==='",
     "cp public/build/.vite/manifest.json public/build/manifest.json",
-    "echo 'Verifying manifest copy:'",
+    "echo '=== Verifying manifest ==='",
     "ls -la public/build/manifest.json",
+    "cat public/build/manifest.json | head -n 10",
     "php artisan config:cache",
     "php artisan route:cache",
     "php artisan view:cache"
