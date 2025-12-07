@@ -3,12 +3,14 @@ nixPkgs = ["php82", "nodejs"]
 
 [phases.install]
 cmds = [
-    "composer install --no-dev --optimize-autoloader",
-    "npm ci --omit=dev"
+    "npm ci --legacy-peer-deps",
+    "composer install --no-dev --optimize-autoloader"
 ]
 
 [phases.build]
 cmds = [
+    "npm run build",
+    "cp -f public/build/.vite/manifest.json public/build/manifest.json",
     "php artisan config:cache",
     "php artisan route:cache",
     "php artisan view:cache"
