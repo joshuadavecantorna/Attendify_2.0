@@ -10,7 +10,10 @@ cmds = [
 [phases.build]
 cmds = [
     "npm run build",
-    "cp -f public/build/.vite/manifest.json public/build/manifest.json",
+    "ls -la public/build/",
+    "ls -la public/build/.vite/",
+    "cp public/build/.vite/manifest.json public/build/manifest.json",
+    "ls -la public/build/manifest.json",
     "php artisan config:cache",
     "php artisan route:cache",
     "php artisan view:cache"
