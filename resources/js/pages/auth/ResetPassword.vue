@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import NewPasswordController from '@/actions/App/Http/Controllers/Auth/NewPasswordController';
+import NewPasswordController from '@/actions/App/Http/Controllers/Auth/NewPasswordController.ts';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -69,3 +69,4 @@ const inputEmail = ref(props.email);
         </Form>
     </AuthLayout>
 </template>
+

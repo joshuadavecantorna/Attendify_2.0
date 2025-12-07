@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ConfirmablePasswordController from '@/actions/App/Http/Controllers/Auth/ConfirmablePasswordController';
+import ConfirmablePasswordController from '@/actions/App/Http/Controllers/Auth/ConfirmablePasswordController.ts';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,3 +40,4 @@ import { LoaderCircle } from 'lucide-vue-next';
         </Form>
     </AuthLayout>
 </template>
+

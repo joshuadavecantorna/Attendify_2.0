@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
+import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController.ts';
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
 import { Form, Head, Link, usePage } from '@inertiajs/vue3';
@@ -106,3 +106,4 @@ const user = page.props.auth.user;
         </SettingsLayout>
     </AppLayout>
 </template>
+

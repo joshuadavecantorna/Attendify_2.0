@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PasswordResetLinkController from '@/actions/App/Http/Controllers/Auth/PasswordResetLinkController';
+import PasswordResetLinkController from '@/actions/App/Http/Controllers/Auth/PasswordResetLinkController.ts';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -46,3 +46,4 @@ defineProps<{
         </div>
     </AuthLayout>
 </template>
+

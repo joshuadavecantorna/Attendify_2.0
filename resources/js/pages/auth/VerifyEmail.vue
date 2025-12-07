@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import EmailVerificationNotificationController from '@/actions/App/Http/Controllers/Auth/EmailVerificationNotificationController';
+import EmailVerificationNotificationController from '@/actions/App/Http/Controllers/Auth/EmailVerificationNotificationController.ts';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import AuthLayout from '@/layouts/AuthLayout.vue';
@@ -30,3 +30,4 @@ defineProps<{
         </Form>
     </AuthLayout>
 </template>
+
