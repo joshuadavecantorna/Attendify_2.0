@@ -180,7 +180,7 @@ const refreshRecentFiles = async () => {
       </div>
 
       <!-- File Upload Options -->
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div class="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <Card class="hover:shadow-md transition-shadow cursor-pointer" @click="openUploadModal">
           <CardHeader class="text-center">
             <div class="mx-auto mb-4 text-6xl">📄</div>

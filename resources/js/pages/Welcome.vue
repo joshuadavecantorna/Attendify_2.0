@@ -10,7 +10,7 @@ import { Head, Link } from '@inertiajs/vue3';
     </Head>
     <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <!-- Header Navigation -->
-        <header class="w-full px-6 py-4 lg:px-8">
+        <header class="w-full px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
             <nav class="flex items-center justify-between max-w-7xl mx-auto">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
@@ -51,7 +51,7 @@ import { Head, Link } from '@inertiajs/vue3';
         </header>
 
         <!-- Hero Section -->
-        <section class="px-6 py-20 lg:px-8">
+        <section class="px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
             <div class="max-w-7xl mx-auto text-center">
                 <div class="mb-8">
                     <div class="inline-flex p-4 bg-white/20 backdrop-blur-sm rounded-2xl mb-6">
@@ -74,7 +74,7 @@ import { Head, Link } from '@inertiajs/vue3';
         </section>
 
         <!-- Main Content -->
-        <div class="max-w-7xl mx-auto px-6 py-12 lg:px-8 space-y-20">
+        <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 sm:py-12 lg:px-8 space-y-12 sm:space-y-16 lg:space-y-20">
             
             <!-- Key Features Overview -->
             <section>
@@ -85,7 +85,7 @@ import { Head, Link } from '@inertiajs/vue3';
                     </p>
                 </div>
                 
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                     <!-- Mobile App -->
                     <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
                         <div class="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg w-fit mb-4">
@@ -141,7 +141,7 @@ import { Head, Link } from '@inertiajs/vue3';
                     </p>
                 </div>
                 
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                     <!-- Present -->
                     <div class="flex items-center bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md border border-gray-100 dark:border-gray-700">
                         <div class="p-2 rounded-full bg-green-500 mr-3">
@@ -205,7 +205,7 @@ import { Head, Link } from '@inertiajs/vue3';
                     </p>
                 </div>
                 
-                <div class="grid md:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
                     <!-- Export Features -->
                     <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
                         <div class="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg w-fit mb-4">
@@ -289,7 +289,7 @@ import { Head, Link } from '@inertiajs/vue3';
                     </p>
                 </div>
                 
-                <div class="grid md:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                     <!-- Teacher Role -->
                     <div class="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
                         <div class="bg-blue-100 dark:bg-blue-900/30 p-4 rounded-lg w-fit mb-6">
@@ -363,7 +363,7 @@ import { Head, Link } from '@inertiajs/vue3';
                     <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
                         Join educators who have simplified their attendance tracking with Attendify's comprehensive solution
                     </p>
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <div class="flex flex-col gap-4 justify-center sm:flex-row">
                         <Link
                             v-if="!$page.props.auth.user"
                             :href="register()"

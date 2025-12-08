@@ -99,7 +99,7 @@ const breadcrumbs = [
       </div>
 
       <!-- Report Types -->
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div class="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <Card class="hover:shadow-md transition-shadow cursor-pointer" @click="$inertia.visit('/teacher/reports/attendance')">
           <CardHeader class="text-center">
             <div class="mx-auto mb-4 text-6xl">📊</div>
@@ -135,7 +135,7 @@ const breadcrumbs = [
       </div>
 
       <!-- Quick Reports Summary -->
-      <div class="grid gap-6 md:grid-cols-2">
+      <div class="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
         <!-- Attendance Summary -->
         <Card>
           <CardHeader>
@@ -191,7 +191,7 @@ const breadcrumbs = [
       </div>
 
       <!-- Statistics Cards -->
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div class="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-4">
         <Card>
           <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle class="text-sm font-medium">Total Reports</CardTitle>

@@ -2,8 +2,11 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  @class(['dark' => ($appearance ?? 'system') == 'dark'])>
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
@@ -24,10 +27,23 @@
         <style>
             html {
                 background-color: oklch(1 0 0);
+                /* Prevent text size adjustment on orientation change (iOS) */
+                -webkit-text-size-adjust: 100%;
             }
 
             html.dark {
                 background-color: oklch(0.145 0 0);
+            }
+            
+            /* Prevent iOS bounce scroll */
+            body {
+                overscroll-behavior-y: contain;
+            }
+            
+            /* Better font rendering for mobile */
+            * {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
             }
         </style>
 

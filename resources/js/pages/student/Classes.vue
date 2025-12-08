@@ -44,15 +44,15 @@ const getAttendanceBadge = (rate: number) => {
   <Head title="My Classes" />
 
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="flex h-full flex-1 flex-col gap-6 p-6">
+    <div class="flex h-full flex-1 flex-col gap-4 sm:gap-6 p-3 sm:p-6">
       <!-- Header -->
       <div>
-        <h1 class="text-3xl font-bold">My Classes</h1>
-        <p class="text-muted-foreground">View your enrolled classes and attendance summary</p>
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold">My Classes</h1>
+        <p class="text-sm sm:text-base text-muted-foreground">View your enrolled classes and attendance summary</p>
       </div>
 
       <!-- Classes Grid -->
-      <div v-if="enrolledClasses.length > 0" class="grid gap-6 md:grid-cols-2">
+      <div v-if="enrolledClasses.length > 0" class="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
         <Card v-for="classItem in enrolledClasses" :key="classItem.id" class="hover:shadow-md transition-shadow">
           <CardHeader>
             <div class="flex items-start justify-between">

@@ -342,19 +342,19 @@ const getStatusIcon = (status: string) => {
   <Head title="Student Dashboard" />
 
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="flex h-full flex-1 flex-col gap-6 p-6">
+    <div class="flex h-full flex-1 flex-col gap-4 p-3 sm:gap-6 sm:p-6">
       <!-- Greeting -->
       <div>
-        <h1 class="text-3xl font-bold">Welcome back, <span class="text-blue-600">{{ props.student?.name || user.name }}</span> 🎓</h1>
-        <p class="text-muted-foreground">
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold">Welcome back, <span class="text-blue-600">{{ props.student?.name || user.name }}</span> 🎓</h1>
+        <p class="text-sm sm:text-base text-muted-foreground">
           Student ID: {{ props.student?.student_id || 'Not available' }} • 
           Course: {{ props.student?.course || 'Not specified' }}
         </p>
-        <p class="text-sm text-muted-foreground mt-1">Here's your attendance overview and upcoming classes</p>
+        <p class="text-xs sm:text-sm text-muted-foreground mt-1">Here's your attendance overview and upcoming classes</p>
       </div>
 
       <!-- Quick Stats Cards -->
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div class="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <!-- Present Percentage -->
         <Card>
           <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -392,7 +392,7 @@ const getStatusIcon = (status: string) => {
         </Card>
       </div>
 
-      <div class="grid gap-4 md:grid-cols-2">
+      <div class="grid gap-4 grid-cols-1 lg:grid-cols-2">
         <!-- Student QR Code Info -->
         <Card class="border-blue-200 bg-blue-50 dark:bg-blue-950/20">
           <CardHeader>
@@ -417,16 +417,16 @@ const getStatusIcon = (status: string) => {
             <CardTitle>Self Check-In</CardTitle>
             <CardDescription>Use your personal QR code (name,course format) to mark attendance</CardDescription>
           </CardHeader>
-          <CardContent class="space-y-4">
-            <Button @click="openQRScanner" class="w-full" size="lg">
-              <QrCode class="mr-2 h-5 w-5" />
+          <CardContent class="space-y-3 sm:space-y-4">
+            <Button @click="openQRScanner" class="w-full text-sm sm:text-base" size="lg">
+              <QrCode class="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               Scan Your QR Code
             </Button>
             <div class="text-center text-sm text-muted-foreground">
               or
             </div>
-            <Button @click="openClassIDEntry" variant="outline" class="w-full" size="lg">
-              <Camera class="mr-2 h-5 w-5" />
+            <Button @click="openClassIDEntry" variant="outline" class="w-full text-sm sm:text-base" size="lg">
+              <Camera class="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               Enter Session ID
             </Button>
           </CardContent>
@@ -491,7 +491,7 @@ const getStatusIcon = (status: string) => {
 
     <!-- QR Scanner Dialog -->
     <Dialog v-model:open="showQRDialog">
-      <DialogContent class="sm:max-w-md">
+      <DialogContent class="w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Self Check-in with Your QR Code</DialogTitle>
           <DialogDescription>

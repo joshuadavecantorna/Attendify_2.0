@@ -165,3 +165,91 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* Mobile Webview Optimizations */
+@layer utilities {
+    /* Touch-friendly tap targets (min 44x44px for iOS, 48x48px for Android) */
+    .touch-target {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Prevent text selection on touch */
+    .no-select {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    /* Smooth scrolling for mobile */
+    .smooth-scroll {
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+    
+    /* Hide scrollbar but keep functionality */
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+/* Mobile-specific styles */
+@media (max-width: 640px) {
+    /* Reduce padding on small screens */
+    .container {
+        @apply px-3;
+    }
+    
+    /* Make tables horizontally scrollable */
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    /* Stack form elements vertically on mobile */
+    form .grid {
+        @apply grid-cols-1 !important;
+    }
+    
+    /* Full width buttons on mobile */
+    .mobile-full-width {
+        @apply w-full;
+    }
+    
+    /* Adjust dialog/modal size for mobile */
+    [role="dialog"] {
+        @apply w-[95vw] max-w-full;
+    }
+}
+
+/* Prevent zoom on input focus (iOS) */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+input[type="search"],
+select,
+textarea {
+    font-size: 16px !important;
+}
+
+/* Touch-friendly interactive elements */
+button,
+a,
+[role="button"],
+[tabindex="0"] {
+    @apply touch-target;
+}
+
+/* Optimized tap highlight */
+* {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}

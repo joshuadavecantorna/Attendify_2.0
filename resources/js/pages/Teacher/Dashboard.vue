@@ -122,18 +122,18 @@ const weeklyAttendance = computed(() => {
   <Head title="Teacher Dashboard" />
   
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="container mx-auto p-6 space-y-6">
+    <div class="container mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
       
       <!-- Header Section -->
-      <div class="space-y-2">
-        <h1 class="text-3xl font-bold tracking-tight">Welcome back, {{ teacherName }}</h1>
-        <p class="text-muted-foreground">
+      <div class="space-y-1 sm:space-y-2">
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Welcome back, {{ teacherName }}</h1>
+        <p class="text-sm sm:text-base text-muted-foreground">
           Here's what's happening with your classes today
         </p>
       </div>
 
       <!-- Overview Statistics -->
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div class="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
         <!-- Total Classes -->
         <Card>
           <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -192,7 +192,7 @@ const weeklyAttendance = computed(() => {
       </div>
 
       <!-- Today's Attendance Stats -->
-      <div class="grid gap-4 md:grid-cols-4" v-if="stats.todayPresent > 0 || stats.todayAbsent > 0 || stats.todayLate > 0 || stats.todayExcused > 0">
+      <div class="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-4" v-if="stats.todayPresent > 0 || stats.todayAbsent > 0 || stats.todayLate > 0 || stats.todayExcused > 0">
         <!-- Present Today -->
         <Card>
           <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">

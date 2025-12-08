@@ -197,7 +197,7 @@ const breadcrumbs = [
               Add Student
             </Button>
           </DialogTrigger>
-          <DialogContent class="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogContent class="w-[95vw] sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add New Student</DialogTitle>
               <DialogDescription>Create a new student account with access credentials.</DialogDescription>
@@ -326,7 +326,7 @@ const breadcrumbs = [
       </div>
 
       <!-- Statistics -->
-      <div class="grid gap-4 md:grid-cols-3">
+      <div class="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         <Card>
           <CardContent class="p-4">
             <div class="flex items-center justify-between mb-2">
