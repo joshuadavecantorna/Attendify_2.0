@@ -1,0 +1,7 @@
+id,name,course,section,year,teacher_id,schedule_time,schedule_days,is_active,created_at,updated_at,schedule
+1,Mathematics 101,BSCS,A,3rd Year,1,10:00:00,"[""monday"",""wednesday"",""friday""]",true,2025-11-20 15:19:37,2025-11-20 15:19:37,
+2,Physics 201,BSCS,B,2nd Year,1,14:00:00,"[""tuesday"",""thursday""]",true,2025-11-20 15:19:37,2025-11-20 15:19:37,
+3,Mathematics 101,BSCS,A,3rd Year,1,10:00:00,"[""monday"",""wednesday"",""friday""]",true,2025-11-20 15:20:41,2025-11-20 15:20:41,
+4,Physics 201,BSCS,B,2nd Year,1,14:00:00,"[""tuesday"",""thursday""]",true,2025-11-20 15:20:42,2025-11-20 15:20:42,
+5,Mathematics 101,BSCS,A,3rd Year,1,10:00:00,"[""monday"",""wednesday"",""friday""]",true,2025-11-20 15:22:08,2025-11-20 15:22:08,
+6,Physics 201,BSCS,B,2nd Year,1,14:00:00,"[""tuesday"",""thursday""]",true,2025-11-20 15:22:08,2025-11-20 15:22:08,

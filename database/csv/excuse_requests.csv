@@ -1,0 +1,20 @@
+id,student_id,attendance_session_id,reason,attachment_path,status,submitted_at,reviewed_at,reviewed_by,review_notes,created_at,updated_at
+1,1,8,Medical reasons,,pending,2025-11-02 13:14:29,,,,2025-11-02 13:14:29,2025-11-02 13:14:29
+2,1,2,Diarrhea,excuse-requests/66XLeCkH5kRISAD99sXOMzSqTJX4fomlwd0wRxMz.png,pending,2025-11-02 13:35:41,,,,2025-11-02 13:35:41,2025-11-02 13:35:41
+3,1,9,Vacation,excuse-requests/x28dlX6rcyx763SGzQl0hsSCHXyVuQS3m8tivNXb.png,approved,2025-11-02 13:49:07,2025-11-02 14:21:05,5,Okay,2025-11-02 13:49:07,2025-11-02 14:21:05
+4,1,9,Study(files attached),excuse-requests/8iTYbet0G7BQzoaReRK75rvhyqxy4fSO2xX29nPF.pdf,approved,2025-11-03 14:42:58,2025-11-03 15:29:11,5,You can sleep now,2025-11-03 14:42:58,2025-11-03 15:29:11
+5,1,9,Nakatulog,excuse-requests/97AKNChN036p32hEZ7hrhsKrTTcaTFBLpNKqIJjB.png,rejected,2025-11-03 15:27:42,2025-11-03 15:28:42,5,Nakatulog ka BECAUSE?????,2025-11-03 15:27:42,2025-11-03 15:28:42
+6,3,1,Sick,,pending,2025-11-03 16:15:14,,,,2025-11-03 16:15:14,2025-11-03 16:15:14
+7,3,7,proof,excuse-requests/0Do2T3tZx2sWodmwtud6bdnDqFaEa2grcnIy4vea.pdf,pending,2025-11-04 07:14:24,,,,2025-11-04 07:14:24,2025-11-04 07:14:24
+8,1,9,Ulan,excuse-requests/rfig1agzKQRUWGhayw9vnAvlxjtuBGsNxr9p7b08.png,approved,2025-11-04 07:37:11,2025-11-04 07:37:47,5,suspended ang klase,2025-11-04 07:37:11,2025-11-04 07:37:47
+9,1,9,Na Late,excuse-requests/9VFUO7Ve6g23V6avSYQLGRwYvelQiykL5QJaXfAv.png,rejected,2025-11-04 07:46:08,2025-11-04 07:46:47,5,so kasalanan ko???!!,2025-11-04 07:46:08,2025-11-04 07:46:47
+10,1,11,Nilagnat po,excuse-requests/E1cl7iJHQGwd52ez4keUO5agks85s2kV8EwZkmAJ.jpg,approved,2025-11-05 13:25:53,2025-11-05 13:30:22,5,Okay pero you need to show me med cert next time ha. Pagaling ka jan baby,2025-11-05 13:25:53,2025-11-05 13:30:22
+11,6,11,sick,excuse-requests/i2u3os5kEJzQK4zcFc5cGFKitCLSgQo7KFWR2mYl.pdf,rejected,2025-11-05 14:38:36,2025-11-05 14:45:58,5,"inom ka lang paracetamol ding, kaya yan ahh ikaw pa",2025-11-05 14:38:36,2025-11-05 14:45:58
+12,12,14,Kalibangon ko sir,excuse-requests/TYmtebBDJlsiEuJuqC4LBPpT6yRFcU0TbOFYe9Oz.jpg,approved,2025-11-05 16:50:34,2025-11-05 16:50:56,5,HAHAHAHAHAHAHAHAHAHAHAHAHAHAHHAHAHAHAHAHAHAHA,2025-11-05 16:50:34,2025-11-05 16:50:56
+13,12,15,wala lang,,pending,2025-11-05 17:10:02,,,,2025-11-05 17:10:02,2025-11-05 17:10:02
+14,19,16,Kalibanga,excuse-requests/8Fn1nmLNjgLqpcLAxHxKWk0ratunxZwgXRjsvLWw.jpg,approved,2025-11-06 03:29:40,2025-11-06 03:51:06,5,HAHAHAHAHAHHHAHA,2025-11-06 03:29:41,2025-11-06 03:51:06
+15,19,16,STD,,approved,2025-11-06 03:54:28,2025-11-06 03:55:17,5,,2025-11-06 03:54:28,2025-11-06 03:55:17
+16,1,17,Fever,,approved,2025-11-06 04:12:14,2025-11-06 04:12:43,5,,2025-11-06 04:12:14,2025-11-06 04:12:43
+17,13,22,Medical Check Up,excuse-requests/2eyY5B2MsCypnPBZQRT4MdgPV4Lxh1zzE7IirGzn.jpg,rejected,2025-11-07 03:24:03,2025-11-07 03:24:40,5,Dele ko,2025-11-07 03:24:03,2025-11-07 03:24:40
+18,13,29,Diarrhea,excuse-requests/oNlthBC6rRD61nET2hYsFiRppgIyD97jt3w9SH0j.png,approved,2025-11-07 04:15:09,2025-11-07 04:16:17,7,OKay,2025-11-07 04:15:09,2025-11-07 04:16:17
+19,1,30,Fever,,pending,2025-11-29 02:45:51,,,,2025-11-29 02:45:51,2025-11-29 02:45:51

@@ -1,0 +1,8 @@
+id,user_id,teacher_id,first_name,last_name,middle_name,email,phone,department,position,salary,profile_picture,is_active,created_at,updated_at
+1,2,TEACH-001,John,Cruz,Dela,john.delacruz@attendify.com,,Computer Science,Professor,,,true,2025-11-01 16:25:21,2025-11-01 16:25:21
+2,5,TEACH-002,Maria,Santos,,maria.santos@attendify.com,,Computer Science,Assistant Professor,,,true,2025-11-01 16:25:22,2025-11-01 16:25:22
+3,9,TEACH-003,Watarie,Manto,,watarie@usm.edu.ph,09858112948,ULS,Teacher II,,,true,2025-11-01 16:30:30,2025-11-01 16:30:30
+4,12,TEACH-004,Jose,Rizal,,teacher1@gmail.com,,Computer Science,Instructor,,,true,2025-11-01 16:44:42,2025-11-01 16:44:42
+5,14,TEACH-005,Clarence Dave,Galas,,teacher1@example.com,,Computer Science,Instructor,,,true,2025-11-02 13:38:11,2025-11-02 13:38:11
+6,24,TEACH-006,Apolinario,Mabini,,teacher2@gmail.com,,Computer Science,Instructor,,,true,2025-11-06 08:54:01,2025-11-06 08:54:01
+7,25,TEACH-007,Ryan,Gonzaga,Z.,ryan@gmail.com,,Computer Science,Instructor,,,true,2025-11-07 03:54:14,2025-11-07 03:54:14

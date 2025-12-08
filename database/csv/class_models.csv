@@ -1,0 +1,12 @@
+id,created_at,updated_at,name,course,section,subject,year,description,teacher_id,schedule_time,schedule_days,class_code,is_active,room,academic_year,semester
+2,2025-11-01 16:27:10,2025-11-01 19:36:02,Data Structures,BSCS,A,,3,,2,14:00:00,"[""Tuesday"",""Thursday""]",BSCS-A-272,true,CE 15,,
+3,2025-11-01 16:27:10,2025-11-01 19:29:57,Database Systems,BSCS,B,,3,,5,13:00:00,"[""Monday"",""Wednesday"",""Friday""]",BSCS-B-412,true,CE 12,,
+8,2025-11-01 17:10:53,2025-11-01 19:59:34,DSA,BSCS,A,,1st Year,,12,11:00:00,"[""Thursday"",""Friday""]",CS03,true,ICT-1,,
+13,2025-11-01 17:30:45,2025-11-01 19:56:09,Discrete Structures,BSCS,A,,1st Year,,12,01:00:00,"[""Monday"",""Wednesday"",""Tuesday""]",CS 02,true,CE12,,
+14,2025-11-01 19:58:05,2025-11-01 19:58:05,Calculus 1,Computer Science,A,,1st Year,A pre-requisite subject in Computer Science.,12,09:00:00,"[""Monday"",""Wednesday"",""Thursday""]",CS Math 01,true,ICT 2,,
+15,2025-11-02 13:41:10,2025-11-02 13:41:10,Life's and works of Rizal,BSCS,A,,3rd Year,The life of Rizal,14,07:00:00,"[""Monday"",""Wednesday""]",GE09,true,CE 13,,
+16,2025-11-05 13:01:20,2025-11-05 13:01:20,Application Development,BSCS,A,,3rd year,Application Development and Emerging Technologies,14,02:30:00,"[""Tuesday"",""Thursday""]",ICT05a,true,UICTO Net Lab 2,,
+17,2025-11-06 08:59:50,2025-11-06 08:59:50,Society and Culture,BSCS,A,,3rd Year,,24,07:00:00,"[""Thursday"",""Tuesday""]",GE07,true,CE25,,
+18,2025-11-07 03:55:30,2025-11-07 03:55:30,Society and Culture 2,BSCS,A,,3rd Year,,25,07:00:00,"[""Monday"",""Wednesday"",""Friday""]",GE08,true,CE 14,,
+20,2025-11-20 15:23:22,2025-11-20 15:23:22,Mathematics 101,BSCS,A,,3rd Year,,2,10:00:00,"[""monday"",""wednesday"",""friday""]",MATH-101,true,,,
+21,2025-11-20 15:23:22,2025-11-20 15:23:22,Physics 201,BSCS,B,,2nd Year,,2,14:00:00,"[""tuesday"",""thursday""]",PHYS-201,true,,,
