@@ -1,11 +1,15 @@
-﻿const fs = require('fs');
-const path = require('path');
+﻿import { existsSync, copyFileSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const source = path.join(__dirname, 'public/build/.vite/manifest.json');
-const dest = path.join(__dirname, 'public/build/manifest.json');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-if (fs.existsSync(source)) {
-    fs.copyFileSync(source, dest);
+const source = join(__dirname, 'public/build/.vite/manifest.json');
+const dest = join(__dirname, 'public/build/manifest.json');
+
+if (existsSync(source)) {
+    copyFileSync(source, dest);
     console.log('✅ Manifest copied successfully!');
 } else {
     console.error('❌ Source manifest not found at:', source);
