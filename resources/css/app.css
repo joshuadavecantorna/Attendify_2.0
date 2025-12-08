@@ -214,7 +214,7 @@
     
     /* Stack form elements vertically on mobile */
     form .grid {
-        @apply grid-cols-1 !important;
+        @apply grid-cols-1;
     }
     
     /* Full width buttons on mobile */
