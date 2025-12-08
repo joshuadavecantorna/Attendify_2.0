@@ -7,12 +7,14 @@ return [
     | Ollama Host
     |--------------------------------------------------------------------------
     |
-    | The base URL for your Ollama server. For local installation, this
-    | should be http://localhost:11434
+    | The base URL for your Ollama server. 
+    | - Local: http://localhost:11434
+    | - Ngrok tunnel: https://your-ngrok-url.ngrok-free.app
+    | - Production: Set this via Railway environment variables
     |
     */
 
-    'host' => env('OLLAMA_HOST'),  // Remove the fallback
+    'host' => env('OLLAMA_HOST', 'http://localhost:11434'),
 
     /*
     |--------------------------------------------------------------------------
@@ -24,7 +26,7 @@ return [
     |
     */
 
-    'model' => env('OLLAMA_MODEL', 'qwen2.5:7b'),
+    'model' => env('OLLAMA_MODEL', 'qwen3-coder:480b-cloud'),
 
     /*
     |--------------------------------------------------------------------------
