@@ -1,8 +1,2 @@
-[phases.setup]
-nixPkgs = ["php82", "php82Packages.composer"]
-
-[phases.build]
-cmds = ["composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist"]
-
 [start]
 cmd = "php artisan migrate --force && php artisan db:seed --force && php -S 0.0.0.0:$PORT -t public"
