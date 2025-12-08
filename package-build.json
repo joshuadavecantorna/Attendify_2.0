@@ -1,0 +1,6 @@
+﻿{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node copy-manifest.js"
+  }
+}
