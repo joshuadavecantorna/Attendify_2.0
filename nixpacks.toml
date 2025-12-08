@@ -1,27 +1,8 @@
-﻿[phases.setup]
-nixPkgs = ["php82", "nodejs"]
-
-[phases.install]
-cmds = [
-    "npm ci --legacy-peer-deps",
-    "composer install --no-dev --optimize-autoloader"
-]
+[phases.setup]
+nixPkgs = ["php82", "php82Packages.composer"]
 
 [phases.build]
-cmds = [
-    "npm run build",
-    "echo '=== Checking build output ==='",
-    "ls -la public/build/",
-    "ls -la public/build/.vite/",
-    "echo '=== Copying manifest ==='",
-    "cp public/build/.vite/manifest.json public/build/manifest.json",
-    "echo '=== Verifying manifest ==='",
-    "ls -la public/build/manifest.json",
-    "cat public/build/manifest.json | head -n 10",
-    "php artisan config:cache",
-    "php artisan route:cache",
-    "php artisan view:cache"
-]
+cmds = ["composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist"]
 
 [start]
-cmd = "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "php artisan migrate --force && php artisan db:seed --force && php -S 0.0.0.0:$PORT -t public"
