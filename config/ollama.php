@@ -12,7 +12,7 @@ return [
     |
     */
 
-    'host' => env('OLLAMA_HOST', 'http://localhost:11434'),
+    'host' => env('OLLAMA_HOST'),  // Remove the fallback
 
     /*
     |--------------------------------------------------------------------------
@@ -48,6 +48,6 @@ return [
     |
     */
 
-    'stream' => false,
+    'stream' => true,
 
 ];
