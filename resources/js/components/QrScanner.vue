@@ -1244,9 +1244,10 @@ const getYearBadgeVariant = (year: string) => {
                       Flash
                     </Button>
                   </div>
+                  </div>
                 </div>
                 
-                  <!-- Instructions -->
+                <!-- Instructions -->
                 <div class="mt-4">
                   <Card class="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 dark:from-blue-950/20 dark:to-indigo-950/20">
                     <CardContent class="p-4">
