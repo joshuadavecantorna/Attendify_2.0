@@ -6,6 +6,7 @@ use App\Services\UserContextBuilder;
 use App\Services\RetrievalPlanner;
 use App\Services\AIComposer;
 use App\Services\OllamaService;
+use App\Services\GroqService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -19,17 +20,20 @@ class ChatbotController extends Controller
     protected RetrievalPlanner $retrievalPlanner;
     protected AIComposer $composer;
     protected OllamaService $ollamaService;
+    protected GroqService $groqService;
 
     public function __construct(
         UserContextBuilder $contextBuilder,
         RetrievalPlanner $retrievalPlanner,
         AIComposer $composer,
-        OllamaService $ollamaService
+        OllamaService $ollamaService,
+        GroqService $groqService
     ) {
         $this->contextBuilder = $contextBuilder;
         $this->retrievalPlanner = $retrievalPlanner;
         $this->composer = $composer;
         $this->ollamaService = $ollamaService;
+        $this->groqService = $groqService;
     }
 
     /**
@@ -38,8 +42,14 @@ class ChatbotController extends Controller
     public function status()
     {
         try {
-            $health = $this->ollamaService->healthCheck();
-            return response()->json(['ai' => $health], $health['ok'] ? 200 : 503);
+            // Try Groq first, fallback to Ollama
+            $groqHealth = $this->groqService->healthCheck();
+            if ($groqHealth['ok']) {
+                return response()->json(['ai' => $groqHealth], 200);
+            }
+
+            $ollamaHealth = $this->ollamaService->healthCheck();
+            return response()->json(['ai' => $ollamaHealth], $ollamaHealth['ok'] ? 200 : 503);
         } catch (\Exception $e) {
             Log::error('ChatbotController::status error', ['error' => $e->getMessage()]);
             return response()->json([
@@ -95,8 +105,13 @@ class ChatbotController extends Controller
             // 5. Compose full prompt with retrieval results
             $prompt = $this->composer->compose($cachedContext, $retrieval, $userQuery);
 
-            // 6. Generate AI response
-            $output = $this->ollamaService->generate($prompt, false);
+            // 6. Generate AI response (Try Groq first, fallback to Ollama)
+            $output = $this->groqService->generate($prompt, false);
+            
+            if ($output === null) {
+                // Fallback to Ollama if Groq fails
+                $output = $this->ollamaService->generate($prompt, false);
+            }
 
             // 7. Handle null response from AI
             if ($output === null || trim($output) === '') {
@@ -151,7 +166,12 @@ class ChatbotController extends Controller
             $retrieval = $this->retrievalPlanner->planAndExecute($userQuery, $cachedContext);
             $prompt = $this->composer->compose($cachedContext, $retrieval, $userQuery);
 
-            $streamSource = $this->ollamaService->streamGenerate($prompt);
+            // Try Groq streaming first, fallback to Ollama
+            $streamSource = $this->groqService->streamGenerate($prompt);
+            if ($streamSource === null) {
+                $streamSource = $this->ollamaService->streamGenerate($prompt);
+            }
+            
             $generator = is_callable($streamSource) ? $streamSource() : $streamSource;
 
             $response = new StreamedResponse(function () use ($generator) {
