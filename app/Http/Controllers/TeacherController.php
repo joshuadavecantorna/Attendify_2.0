@@ -1389,6 +1389,15 @@ class TeacherController extends Controller
             $uploadedFiles[] = $classFile;
         }
 
+        // If the request expects JSON (AJAX/axios), return JSON to avoid "Invalid response format"
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => count($uploadedFiles) . ' file(s) uploaded successfully',
+                'uploadedFiles' => $uploadedFiles
+            ]);
+        }
+
         return redirect()->back()->with([
             'success' => true,
             'message' => count($uploadedFiles) . ' file(s) uploaded successfully',
@@ -3718,21 +3727,48 @@ class TeacherController extends Controller
      */
     public function approveExcuseRequest(Request $request, $requestId)
     {
-        $teacher = $this->getCurrentTeacher();
+        try {
+            $teacher = $this->getCurrentTeacher();
 
-        $excuseRequest = ExcuseRequest::with(['attendanceSession.class'])
-            ->whereHas('attendanceSession.class', function($query) use ($teacher) {
-                $query->where('teacher_id', $teacher->user_id);
-            })
-            ->findOrFail($requestId);
+            $excuseRequest = ExcuseRequest::with(['attendanceSession.class'])
+                ->whereHas('attendanceSession.class', function($query) use ($teacher) {
+                    $query->where('teacher_id', $teacher->user_id);
+                })
+                ->findOrFail($requestId);
 
-        $validated = $request->validate([
-            'review_notes' => 'nullable|string|max:1000',
-        ]);
+            $validated = $request->validate([
+                'review_notes' => 'nullable|string|max:1000',
+            ]);
 
-        $excuseRequest->approve($teacher, $validated['review_notes'] ?? null);
+            $excuseRequest->approve($teacher, $validated['review_notes'] ?? null);
 
-        return redirect()->back()->with('success', 'Excuse request approved successfully.');
+            $payload = [
+                'success' => true,
+                'message' => 'Excuse request approved successfully.'
+            ];
+
+            if ($request->wantsJson()) {
+                return response()->json($payload);
+            }
+
+            return redirect()->back()->with($payload);
+        } catch (\Throwable $e) {
+            \Log::error('Approve excuse request failed', [
+                'request_id' => $requestId,
+                'error' => $e->getMessage(),
+            ]);
+
+            $payload = [
+                'success' => false,
+                'message' => 'Failed to approve excuse request: ' . $e->getMessage(),
+            ];
+
+            if ($request->wantsJson()) {
+                return response()->json($payload, 500);
+            }
+
+            return redirect()->back()->withErrors(['error' => $payload['message']]);
+        }
     }
 
     /**
@@ -3740,21 +3776,48 @@ class TeacherController extends Controller
      */
     public function rejectExcuseRequest(Request $request, $requestId)
     {
-        $teacher = $this->getCurrentTeacher();
+        try {
+            $teacher = $this->getCurrentTeacher();
 
-        $excuseRequest = ExcuseRequest::with(['attendanceSession.class'])
-            ->whereHas('attendanceSession.class', function($query) use ($teacher) {
-                $query->where('teacher_id', $teacher->user_id);
-            })
-            ->findOrFail($requestId);
+            $excuseRequest = ExcuseRequest::with(['attendanceSession.class'])
+                ->whereHas('attendanceSession.class', function($query) use ($teacher) {
+                    $query->where('teacher_id', $teacher->user_id);
+                })
+                ->findOrFail($requestId);
 
-        $validated = $request->validate([
-            'review_notes' => 'required|string|max:1000',
-        ]);
+            $validated = $request->validate([
+                'review_notes' => 'required|string|max:1000',
+            ]);
 
-        $excuseRequest->reject($teacher, $validated['review_notes']);
+            $excuseRequest->reject($teacher, $validated['review_notes']);
 
-        return redirect()->back()->with('success', 'Excuse request rejected.');
+            $payload = [
+                'success' => true,
+                'message' => 'Excuse request rejected.'
+            ];
+
+            if ($request->wantsJson()) {
+                return response()->json($payload);
+            }
+
+            return redirect()->back()->with($payload);
+        } catch (\Throwable $e) {
+            \Log::error('Reject excuse request failed', [
+                'request_id' => $requestId,
+                'error' => $e->getMessage(),
+            ]);
+
+            $payload = [
+                'success' => false,
+                'message' => 'Failed to reject excuse request: ' . $e->getMessage(),
+            ];
+
+            if ($request->wantsJson()) {
+                return response()->json($payload, 500);
+            }
+
+            return redirect()->back()->withErrors(['error' => $payload['message']]);
+        }
     }
 
     /**
