@@ -66,18 +66,24 @@ const getStatusBadge = (percentage: number) => {
   if (percentage >= 60) return 'outline';
   return 'destructive';
 };
+
+const expandedSessionId = ref<number | null>(null);
+
+const toggleSession = (id: number) => {
+  expandedSessionId.value = expandedSessionId.value === id ? null : id;
+};
 </script>
 
 <template>
   <Head title="Attendance Reports" />
   
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="container mx-auto p-6 space-y-6">
+    <div class="container mx-auto p-4 sm:p-6 space-y-6">
       
       <!-- Header Section -->
       <div class="space-y-2">
-        <h1 class="text-3xl font-bold tracking-tight">Attendance Reports</h1>
-        <p class="text-muted-foreground">
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Attendance Reports</h1>
+        <p class="text-sm sm:text-base text-muted-foreground">
           Detailed attendance analytics and trends for your classes
         </p>
       </div>
@@ -88,7 +94,7 @@ const getStatusBadge = (percentage: number) => {
           <CardTitle>Filters</CardTitle>
         </CardHeader>
         <CardContent>
-          <div class="flex gap-4 items-end">
+          <div class="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4">
             <div class="flex-1">
               <label class="text-sm font-medium">Class</label>
               <Select v-model="selectedClass">
@@ -103,7 +109,7 @@ const getStatusBadge = (percentage: number) => {
                 </SelectContent>
               </Select>
             </div>
-            <Button @click="filterByClass">Apply Filter</Button>
+            <Button class="w-full sm:w-auto" @click="filterByClass">Apply Filter</Button>
           </div>
         </CardContent>
       </Card>
@@ -119,12 +125,55 @@ const getStatusBadge = (percentage: number) => {
         <CardContent>
           <div v-if="sessions.length === 0" class="text-center py-8">
             <p class="text-muted-foreground">No attendance sessions found.</p>
-            <Button @click="$inertia.visit('/teacher/attendance')" class="mt-4">
+            <Button @click="$inertia.visit('/teacher/attendance')" class="mt-4 w-full sm:w-auto">
               Start Taking Attendance
             </Button>
           </div>
           
-          <Table v-else>
+          <!-- Mobile cards with accordion details -->
+          <div v-else class="space-y-3 sm:hidden">
+            <div
+              v-for="session in sessions.filter(s => s && s.id)"
+              :key="session.id"
+              class="border rounded-lg p-4 bg-card/50"
+            >
+              <button
+                class="w-full text-left space-y-2"
+                @click="toggleSession(session.id)">
+                <div class="flex justify-between items-start gap-3">
+                  <div>
+                    <div class="font-semibold">{{ session.class_name || 'Unknown Class' }}</div>
+                    <div class="text-sm text-muted-foreground">{{ session.course || 'Unknown' }} - {{ session.section || 'Unknown' }}</div>
+                  </div>
+                  <Badge :variant="session.status === 'active' ? 'default' : 'secondary'" class="shrink-0">
+                    {{ session.status || 'unknown' }}
+                  </Badge>
+                </div>
+                <div class="text-sm text-muted-foreground">
+                  {{ session.session_date ? new Date(session.session_date).toLocaleDateString() : 'Unknown Date' }} — {{ session.session_name || 'Unnamed Session' }}
+                </div>
+              </button>
+
+              <transition name="fade">
+                <div v-if="expandedSessionId === session.id" class="mt-2 space-y-2 text-sm">
+                  <div class="flex flex-wrap gap-2">
+                    <span class="font-medium text-green-600">Present: {{ session.present_count || 0 }}</span>
+                    <span class="font-medium text-red-600">Absent: {{ session.absent_count || 0 }}</span>
+                    <span class="text-muted-foreground">Total: {{ session.total_count || 0 }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-medium">{{ getAttendancePercentage(session.present_count || 0, session.total_count || 0) }}%</span>
+                    <Badge :variant="getStatusBadge(getAttendancePercentage(session.present_count || 0, session.total_count || 0))">
+                      {{ getAttendancePercentage(session.present_count || 0, session.total_count || 0) >= 75 ? 'Good' : 'Needs Attention' }}
+                    </Badge>
+                  </div>
+                </div>
+              </transition>
+            </div>
+          </div>
+
+          <!-- Desktop table -->
+          <Table v-else class="hidden sm:table">
             <TableHeader>
               <TableRow>
                 <TableHead>Class</TableHead>

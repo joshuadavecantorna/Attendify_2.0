@@ -175,7 +175,7 @@ const mockClassData = (classItem: ClassItem) => ({
       </div>
 
       <!-- Quick Stats Cards -->
-      <div class="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle class="text-sm font-medium">Total Classes</CardTitle>
@@ -281,16 +281,16 @@ const mockClassData = (classItem: ClassItem) => ({
                   <!-- Action Buttons -->
                   <Separator />
                   
-                  <div class="flex gap-2">
-                    <Button size="sm" variant="default" @click="$inertia.visit(`/teacher/classes/${classItem.id}`)">
+                  <div class="flex flex-col sm:flex-row gap-2">
+                    <Button size="sm" variant="default" class="w-full sm:w-auto" @click="$inertia.visit(`/teacher/classes/${classItem.id}`)">
                       <Users class="h-4 w-4 mr-1" />
                       Students
                     </Button>
-                    <Button size="sm" variant="outline" @click="$inertia.visit(`/teacher/attendance/direct/${classItem.id}`)">
+                    <Button size="sm" variant="outline" class="w-full sm:w-auto" @click="$inertia.visit(`/teacher/attendance/direct/${classItem.id}`)">
                       <Clock class="h-4 w-4 mr-1" />
                       Take Attendance
                     </Button>
-                    <Button size="sm" variant="outline" @click="openEditDialog(classItem)">
+                    <Button size="sm" variant="outline" class="w-full sm:w-auto" @click="openEditDialog(classItem)">
                       <Edit class="h-4 w-4" />
                     </Button>
                   </div>
@@ -305,7 +305,7 @@ const mockClassData = (classItem: ClassItem) => ({
 
     <!-- Create Class Dialog -->
     <Dialog v-model:open="showCreateDialog">
-      <DialogContent class="sm:max-w-[600px]">
+      <DialogContent class="w-[95vw] max-w-[95vw] sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Class</DialogTitle>
           <DialogDescription>
@@ -313,7 +313,7 @@ const mockClassData = (classItem: ClassItem) => ({
           </DialogDescription>
         </DialogHeader>
         <form @submit.prevent="createClass" class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-2">
               <Label for="create-name">Class Name *</Label>
               <Input 
@@ -338,7 +338,7 @@ const mockClassData = (classItem: ClassItem) => ({
             </div>
           </div>
           
-          <div class="grid grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div class="space-y-2">
               <Label for="create-course">Course *</Label>
               <Input 
@@ -374,7 +374,7 @@ const mockClassData = (classItem: ClassItem) => ({
             </div>
           </div>
           
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-2">
               <Label for="create-room">Room</Label>
               <Input 
@@ -438,7 +438,7 @@ const mockClassData = (classItem: ClassItem) => ({
 
     <!-- Edit Class Dialog -->
     <Dialog v-model:open="showEditDialog">
-      <DialogContent class="sm:max-w-[600px]">
+      <DialogContent class="w-[95vw] max-w-[95vw] sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Class</DialogTitle>
           <DialogDescription>
@@ -446,7 +446,7 @@ const mockClassData = (classItem: ClassItem) => ({
           </DialogDescription>
         </DialogHeader>
         <form @submit.prevent="updateClass" class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-2">
               <Label for="edit-name">Class Name *</Label>
               <Input 
@@ -469,7 +469,7 @@ const mockClassData = (classItem: ClassItem) => ({
             </div>
           </div>
           
-          <div class="grid grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div class="space-y-2">
               <Label for="edit-course">Course *</Label>
               <Input 
@@ -502,7 +502,7 @@ const mockClassData = (classItem: ClassItem) => ({
             </div>
           </div>
           
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-2">
               <Label for="edit-room">Room</Label>
               <Input 

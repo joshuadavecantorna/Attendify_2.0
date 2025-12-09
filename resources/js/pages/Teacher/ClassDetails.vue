@@ -62,6 +62,7 @@ const breadcrumbs = [
 
 // State
 const showAddStudentDialog = ref(false);
+const expandedStudentId = ref<number | null>(null);
 
 // Add student form
 const addStudentForm = useForm({
@@ -100,6 +101,10 @@ const removeStudent = (studentId: number) => {
 const startAttendance = () => {
   // Navigate to attendance page with this class pre-selected
   window.location.href = `/teacher/attendance?class_id=${props.classData.id}`;
+};
+
+const toggleStudentCard = (id: number) => {
+  expandedStudentId.value = expandedStudentId.value === id ? null : id;
 };
 </script>
 
@@ -205,7 +210,60 @@ const startAttendance = () => {
             </Button>
           </div>
 
-          <Table v-else>
+          <!-- Mobile-friendly list -->
+          <div v-else class="space-y-3 sm:hidden">
+            <div
+              v-for="student in students"
+              :key="student.id"
+              class="border rounded-lg p-4 bg-card/50 shadow-sm"
+            >
+              <button
+                class="w-full text-left flex items-start justify-between gap-3"
+                @click="toggleStudentCard(student.id)"
+              >
+                <div>
+                  <div class="font-semibold leading-tight">{{ student.first_name }} {{ student.last_name }}</div>
+                  <div class="text-sm text-muted-foreground">{{ student.student_id }}</div>
+                </div>
+                <Badge :variant="student.status === 'enrolled' ? 'default' : 'secondary'">
+                  {{ student.status }}
+                </Badge>
+              </button>
+
+              <transition name="fade">
+                <div v-if="expandedStudentId === student.id" class="mt-3 space-y-2 text-sm">
+                  <div class="flex items-center gap-2">
+                    <Mail class="h-4 w-4" />
+                    <span class="break-all">{{ student.email }}</span>
+                  </div>
+                  <div v-if="student.phone" class="flex items-center gap-2">
+                    <Phone class="h-4 w-4" />
+                    <span class="break-all">{{ student.phone }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <Clock class="h-4 w-4" />
+                    <span>{{ student.year }} {{ student.course }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <Users class="h-4 w-4" />
+                    <span>Section {{ student.section }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-muted-foreground">Enrolled {{ new Date(student.enrolled_at).toLocaleDateString() }}</span>
+                  </div>
+                  <div class="flex gap-2">
+                    <Button size="sm" variant="destructive" class="w-full" @click="removeStudent(student.id)">
+                      <UserX class="h-3 w-3" />
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              </transition>
+            </div>
+          </div>
+
+          <!-- Desktop table -->
+          <Table v-else class="hidden sm:table">
             <TableHeader>
               <TableRow>
                 <TableHead>Student</TableHead>

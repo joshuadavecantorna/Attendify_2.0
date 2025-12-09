@@ -1,6 +1,6 @@
 <template>
   <Dialog :open="open" @update:open="handleOpenChange">
-    <DialogContent class="max-w-4xl max-h-[80vh] overflow-y-auto">
+    <DialogContent class="w-[95vw] max-w-[95vw] sm:max-w-4xl max-h-[80vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>Add Students to Class</DialogTitle>
         <DialogDescription>
@@ -9,7 +9,7 @@
       </DialogHeader>
 
       <!-- Tab Selection -->
-      <div class="flex space-x-1 rounded-lg bg-muted p-1 mb-4">
+      <div class="flex flex-col sm:flex-row sm:space-x-1 space-y-1 sm:space-y-0 rounded-lg bg-muted p-1 mb-4">
         <button
           @click="activeTab = 'existing'"
           :class="[
@@ -37,14 +37,14 @@
       <!-- Search Existing Students Tab -->
       <div v-if="activeTab === 'existing'" class="space-y-4">
         <!-- Search Input -->
-        <div class="flex gap-2">
+        <div class="flex flex-col sm:flex-row gap-2">
           <Input
             v-model="searchQuery"
             placeholder="Search by name, student ID, or email..."
             @input="handleSearch"
             class="flex-1"
           />
-          <Button type="button" @click="searchStudents" :disabled="!searchQuery.trim()">
+          <Button type="button" class="w-full sm:w-auto" @click="searchStudents" :disabled="!searchQuery.trim()">
             <Search class="h-4 w-4 mr-2" />
             Search
           </Button>
@@ -87,15 +87,15 @@
           </div>
 
           <!-- Selected Count and Actions -->
-          <div v-if="selectedStudents.length > 0" class="flex items-center justify-between pt-2">
-            <span class="text-sm text-muted-foreground">
+          <div v-if="selectedStudents.length > 0" class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2">
+            <span class="text-sm text-muted-foreground w-full sm:w-auto">
               {{ selectedStudents.length }} student(s) selected
             </span>
-            <div class="flex gap-2">
-              <Button variant="outline" @click="selectedStudents = []">
+            <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:justify-end">
+              <Button variant="outline" class="w-full sm:w-auto" @click="selectedStudents = []">
                 Clear Selection
               </Button>
-              <Button @click="addSelectedStudents" :disabled="processing">
+              <Button class="w-full sm:w-auto" @click="addSelectedStudents" :disabled="processing">
                 <Users class="h-4 w-4 mr-2" />
                 Add Selected Students
               </Button>
@@ -149,7 +149,7 @@
             />
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label for="course">Course</Label>
               <Select v-model="newStudentForm.course">
@@ -189,11 +189,11 @@
             />
           </div>
 
-          <div class="flex justify-end gap-2">
-            <Button type="button" variant="outline" @click="$emit('close')">
+          <div class="flex flex-col sm:flex-row justify-end gap-2">
+            <Button type="button" class="w-full sm:w-auto" variant="outline" @click="$emit('close')">
               Cancel
             </Button>
-            <Button type="submit" :disabled="processing">
+            <Button type="submit" class="w-full sm:w-auto" :disabled="processing">
               <UserPlus class="h-4 w-4 mr-2" />
               Add Student
             </Button>

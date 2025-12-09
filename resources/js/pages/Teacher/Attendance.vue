@@ -256,18 +256,18 @@ const exportSession = () => {
   <Head title="Teacher Attendance" />
   
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="container mx-auto p-6 space-y-6">
+    <div class="container mx-auto p-4 sm:p-6 space-y-6">
       
       <!-- Header Section -->
       <div class="space-y-2">
-        <h1 class="text-3xl font-bold tracking-tight">Attendance Management</h1>
-        <p class="text-muted-foreground">
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Attendance Management</h1>
+        <p class="text-sm sm:text-base text-muted-foreground">
           Manage attendance sessions for your classes
         </p>
       </div>
 
       <!-- Statistics Overview -->
-      <div class="grid gap-4 md:grid-cols-4">
+      <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle class="text-sm font-medium">Total Classes</CardTitle>
@@ -324,7 +324,7 @@ const exportSession = () => {
       <!-- Classes Section -->
       <Card>
         <CardHeader>
-          <div class="flex items-center justify-between">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <CardTitle class="flex items-center gap-2">
                 <Settings class="h-5 w-5" />
@@ -334,12 +334,12 @@ const exportSession = () => {
             </div>
             <Dialog v-model:open="showCreateSessionDialog">
               <DialogTrigger as-child>
-                <Button class="flex items-center gap-2">
+                <Button class="flex items-center gap-2 w-full sm:w-auto justify-center">
                   <Plus class="h-4 w-4" />
                   New Session
                 </Button>
               </DialogTrigger>
-              <DialogContent class="sm:max-w-[500px]">
+              <DialogContent class="w-[95vw] max-w-[95vw] sm:max-w-[500px] max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Create Attendance Session</DialogTitle>
                   <DialogDescription>Set up a new attendance session for one of your classes.</DialogDescription>
@@ -396,15 +396,15 @@ const exportSession = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div class="grid gap-4 md:grid-cols-2">
+          <div class="grid gap-4 grid-cols-1 md:grid-cols-2">
             <div v-for="cls in props.classes" :key="cls.id" class="border rounded-lg p-4">
-              <div class="flex items-center justify-between">
-                <div>
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div class="flex-1">
                   <h3 class="font-medium">{{ cls.course_code }}</h3>
                   <p class="text-sm text-muted-foreground">{{ cls.class_name }}</p>
                   <p class="text-xs text-muted-foreground mt-1">{{ cls.student_count }} students</p>
                 </div>
-                <Button size="sm" @click="startQuickSession(cls.id)">
+                <Button size="sm" class="w-full sm:w-auto" @click="startQuickSession(cls.id)">
                   Quick Start
                 </Button>
               </div>
@@ -421,20 +421,24 @@ const exportSession = () => {
         </CardHeader>
         <CardContent>
           <div class="space-y-4">
-            <div v-for="session in props.recent_sessions" :key="session.id" class="flex items-center justify-between p-4 border rounded-lg">
-              <div class="flex items-center gap-3">
-                <Badge variant="secondary">{{ session.course_code }}</Badge>
+            <div
+              v-for="session in props.recent_sessions"
+              :key="session.id"
+              class="p-4 border rounded-lg flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div class="flex items-start gap-3 sm:items-center">
+                <Badge variant="secondary" class="shrink-0">{{ session.course_code }}</Badge>
                 <div>
-                  <p class="font-medium">{{ session.class_name }}</p>
+                  <p class="font-medium leading-tight">{{ session.class_name }}</p>
                   <p class="text-sm text-muted-foreground">{{ session.date }} at {{ session.time }}</p>
                 </div>
               </div>
-              <div class="flex items-center gap-2">
+              <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <span class="text-sm text-muted-foreground">{{ session.present_count }}/{{ session.total_count }} students</span>
-                <Badge :variant="session.status === 'completed' ? 'default' : 'secondary'">
+                <Badge :variant="session.status === 'completed' ? 'default' : 'secondary'" class="w-fit">
                   {{ session.status }}
                 </Badge>
-                <Button size="sm" variant="outline" @click="manageSession(session)">
+                <Button size="sm" variant="outline" class="w-full sm:w-auto" @click="manageSession(session)">
                   Manage
                 </Button>
               </div>
@@ -447,7 +451,7 @@ const exportSession = () => {
             </div>
 
             <div class="text-center py-4">
-              <Button variant="outline" @click="showComingSoon">
+              <Button variant="outline" class="w-full sm:w-auto" @click="showComingSoon">
                 View All Sessions
               </Button>
             </div>
@@ -461,7 +465,7 @@ const exportSession = () => {
 
     <!-- Manage Attendance Session Dialog -->
     <Dialog v-model:open="showManageSessionDialog">
-      <DialogContent class="sm:max-w-[600px]">
+      <DialogContent class="w-[95vw] max-w-[95vw] sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle v-if="selectedSession">Manage: {{ selectedSession.class_name }}</DialogTitle>
           <DialogDescription v-if="selectedSession">

@@ -1,6 +1,6 @@
 <template>
   <Dialog v-model:open="open">
-    <DialogContent class="max-w-md">
+    <DialogContent class="w-[95vw] max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>Upload File</DialogTitle>
         <DialogDescription>
@@ -104,7 +104,7 @@
         </div>
 
         <!-- File Settings -->
-        <div class="space-y-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="flex items-center space-x-2">
             <Checkbox id="allow-download" v-model="allowDownload" />
             <Label for="allow-download" class="text-sm">Allow students to download</Label>
@@ -135,15 +135,18 @@
         </div>
 
         <!-- Actions -->
-        <DialogFooter>
-          <Button type="button" variant="outline" @click="open = false" :disabled="isUploading">
-            Cancel
-          </Button>
-          <Button type="submit" :disabled="!canUpload || isUploading">
-            <Loader2 v-if="isUploading" class="h-4 w-4 mr-2 animate-spin" />
-            <Upload v-else class="h-4 w-4 mr-2" />
-            {{ isUploading ? 'Uploading...' : 'Upload Files' }}
-          </Button>
+        <DialogFooter class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+          <div class="text-sm text-gray-500">Max 10MB per file. Supported: PDF, Word, PowerPoint, Excel, Images, Videos.</div>
+          <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button type="button" variant="outline" class="w-full sm:w-auto" @click="open = false" :disabled="isUploading">
+              Cancel
+            </Button>
+            <Button type="submit" class="w-full sm:w-auto" :disabled="!canUpload || isUploading">
+              <Loader2 v-if="isUploading" class="h-4 w-4 mr-2 animate-spin" />
+              <Upload v-else class="h-4 w-4 mr-2" />
+              {{ isUploading ? 'Uploading...' : 'Upload Files' }}
+            </Button>
+          </div>
         </DialogFooter>
       </form>
     </DialogContent>

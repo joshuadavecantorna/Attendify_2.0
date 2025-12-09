@@ -87,23 +87,23 @@ const submitExcuseRequest = () => {
 
 
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="flex h-full flex-1 flex-col gap-6 p-6">
+    <div class="flex h-full flex-1 flex-col gap-6 p-4 sm:p-6">
       <!-- Header -->
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-3xl font-bold">Excuse Requests</h1>
-          <p class="text-muted-foreground">Submit and track your absence excuse requests</p>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="space-y-1">
+          <h1 class="text-2xl sm:text-3xl font-bold leading-tight">Excuse Requests</h1>
+          <p class="text-sm sm:text-base text-muted-foreground">Submit and track your absence excuse requests</p>
         </div>
         
         <!-- New Request Button -->
         <Dialog v-model:open="isDialogOpen">
           <DialogTrigger as-child>
-            <Button>
+            <Button class="w-full sm:w-auto">
               <Plus class="mr-2 h-4 w-4" />
               New Request
             </Button>
           </DialogTrigger>
-          <DialogContent class="sm:max-w-md">
+          <DialogContent class="w-[95vw] sm:w-auto sm:max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Submit Excuse Request</DialogTitle>
               <DialogDescription>
@@ -116,10 +116,10 @@ const submitExcuseRequest = () => {
               <div class="space-y-2">
                 <Label for="class">Class</Label>
                 <Select v-model:model-value="excuseForm.attendance_session_id">
-                  <SelectTrigger>
+                  <SelectTrigger class="w-full">
                     <SelectValue placeholder="Select a class session" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent class="max-h-64">
                     <SelectItem
                       v-for="c in classes"
                       :key="c.id"
@@ -138,7 +138,7 @@ const submitExcuseRequest = () => {
               <!-- Reason -->
               <div class="space-y-2">
                 <Label for="reason">Reason</Label>
-                <Textarea id="reason" v-model="excuseForm.reason" placeholder="Explain your reason for absence" />
+                <Textarea id="reason" v-model="excuseForm.reason" placeholder="Explain your reason for absence" class="min-h-[120px]" />
                 <p v-if="excuseForm.errors.reason" class="text-sm text-red-600">
                   {{ excuseForm.errors.reason }}
                 </p>
@@ -158,7 +158,7 @@ const submitExcuseRequest = () => {
                 </p>
               </div>
               
-              <Button type="submit" :disabled="excuseForm.processing">
+              <Button type="submit" :disabled="excuseForm.processing" class="w-full">
                 {{ excuseForm.processing ? 'Submitting...' : 'Submit Request' }}
               </Button>
             </form>
@@ -168,7 +168,7 @@ const submitExcuseRequest = () => {
 
 
       <!-- Stats -->
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle class="text-sm font-medium">Total Requests</CardTitle>

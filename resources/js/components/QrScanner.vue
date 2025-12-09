@@ -1036,12 +1036,12 @@ const getYearBadgeVariant = (year: string) => {
 </script>
 
 <template>
-  <div v-if="show" class="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-background border rounded-xl shadow-xl w-full max-w-6xl h-[95vh] flex flex-col overflow-hidden">
+  <div v-if="show" class="fixed inset-0 z-50 bg-background/85 backdrop-blur-sm flex items-start sm:items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-background border rounded-xl shadow-xl w-full max-w-6xl h-full sm:h-[90vh] max-h-[calc(100vh-1.5rem)] flex flex-col overflow-hidden">
       <!-- Header -->
       <div class="flex-shrink-0 border-b bg-gradient-to-r from-background to-muted/20">
-        <div class="px-6 py-4">
-          <div class="flex items-center justify-between">
+        <div class="px-4 sm:px-6 py-4">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                 <QrCode class="h-6 w-6 text-primary-foreground" />
@@ -1053,11 +1053,11 @@ const getYearBadgeVariant = (year: string) => {
                 </p>
               </div>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-start sm:justify-end">
               <Badge variant="secondary" class="text-xs">
                 {{ pendingScans.length }} pending • {{ scanHistory.length }} total
               </Badge>
-              <Button variant="outline" size="sm" @click="quickTestScan">
+              <Button variant="outline" size="sm" class="w-full sm:w-auto" @click="quickTestScan">
                 <Zap class="h-4 w-4 mr-2" />
                 Test Scan
               </Button>
@@ -1067,12 +1067,13 @@ const getYearBadgeVariant = (year: string) => {
                 size="sm"
                 @click="toggleScanning"
                 :disabled="cameraStatus === 'error' || cameraStatus === 'unsupported'"
+                class="w-full sm:w-auto"
               >
                 <Play v-if="!isScanning" class="h-4 w-4 mr-2" />
                 <Square v-if="isScanning" class="h-4 w-4 mr-2" />
                 {{ isScanning ? 'Stop Scanning' : 'Start Scanning' }}
               </Button>
-              <Button variant="ghost" size="icon" @click="closeScanner">
+              <Button variant="ghost" size="icon" class="ml-auto sm:ml-0" @click="closeScanner">
                 <X class="h-5 w-5" />
               </Button>
             </div>
@@ -1085,7 +1086,7 @@ const getYearBadgeVariant = (year: string) => {
         <Tabs :value="activeTab" class="h-full flex flex-col">
           <div class="flex-shrink-0 border-b bg-muted/30">
             <div class="px-3 sm:px-6">
-              <TabsList class="w-full grid grid-cols-3 bg-transparent h-auto p-0">
+              <TabsList class="w-full grid grid-cols-1 sm:grid-cols-3 bg-transparent h-auto p-0 gap-2 sm:gap-0">
                 <TabsTrigger 
                   value="camera" 
                   @click="switchToCamera"
@@ -1121,11 +1122,11 @@ const getYearBadgeVariant = (year: string) => {
           </div>
 
           <!-- Camera Tab Content -->
-          <TabsContent value="camera" class="flex-1 m-0 p-6 overflow-auto data-[state=inactive]:hidden">
+          <TabsContent value="camera" class="flex-1 m-0 p-4 sm:p-6 overflow-auto data-[state=inactive]:hidden">
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 h-full">
               <!-- Camera Container -->
               <div class="xl:col-span-2 flex flex-col">
-                <div class="bg-black rounded-xl overflow-hidden relative flex-1 flex items-center justify-center min-h-[400px]">
+                <div class="bg-black rounded-xl overflow-hidden relative flex-1 flex items-center justify-center min-h-[320px] sm:min-h-[420px]">
                   <QrcodeStream
                     v-if="camera !== 'off' && isSecureContext"
                     :camera="camera"
@@ -1416,7 +1417,7 @@ const getYearBadgeVariant = (year: string) => {
           </TabsContent>
 
           <!-- Manual Input Tab Content -->
-          <TabsContent value="manual" class="flex-1 m-0 p-6 overflow-auto data-[state=inactive]:hidden">
+          <TabsContent value="manual" class="flex-1 m-0 p-4 sm:p-6 overflow-auto data-[state=inactive]:hidden">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
               <!-- Manual Form -->
               <div class="space-y-6">
@@ -1636,7 +1637,7 @@ const getYearBadgeVariant = (year: string) => {
           </TabsContent>
 
           <!-- File Upload Tab Content -->
-          <TabsContent value="upload" class="flex-1 m-0 p-6 overflow-auto data-[state=inactive]:hidden">
+          <TabsContent value="upload" class="flex-1 m-0 p-4 sm:p-6 overflow-auto data-[state=inactive]:hidden">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
               <!-- Upload Section -->
               <div class="space-y-6">

@@ -163,17 +163,17 @@ const refreshRecentFiles = async () => {
   <Head title="Teacher Files" />
   
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="container mx-auto p-6 space-y-6">
+    <div class="container mx-auto p-4 sm:p-6 space-y-6">
       
       <!-- Header Section -->
-      <div class="flex items-center justify-between">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div class="space-y-2">
-          <h1 class="text-3xl font-bold tracking-tight">File Management</h1>
-          <p class="text-muted-foreground">
+          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">File Management</h1>
+          <p class="text-sm sm:text-base text-muted-foreground">
             Upload and manage files for your classes
           </p>
         </div>
-        <Button @click="openUploadModal">
+        <Button class="w-full sm:w-auto" @click="openUploadModal">
           <span class="mr-2">📤</span>
           Upload File
         </Button>
@@ -224,20 +224,20 @@ const refreshRecentFiles = async () => {
         <CardContent>
           <div class="space-y-4">
             <template v-if="currentRecentFiles && currentRecentFiles.length > 0">
-              <div v-for="file in currentRecentFiles" :key="file.id" 
-                   class="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-                <div class="flex items-center gap-3">
+              <div v-for="file in currentRecentFiles" :key="file.id"
+                   class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border rounded-lg hover:bg-gray-50">
+                <div class="flex items-start sm:items-center gap-3">
                   <div class="text-2xl">{{ getFileIcon(file.file_type) }}</div>
                   <div>
-                    <p class="font-medium">{{ file.file_name }}</p>
+                    <p class="font-medium break-all">{{ file.file_name }}</p>
                     <p class="text-sm text-muted-foreground">
                       {{ formatDate(file.created_at) }} • {{ file.file_size_formatted }}
                     </p>
                   </div>
                 </div>
-                <div class="flex items-center gap-2">
-                  <Badge variant="secondary">{{ file.class_name }}</Badge>
-                  <Button size="sm" variant="outline" @click="downloadFile(file.download_url, file.file_name)">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-2 w-full sm:w-auto">
+                  <Badge variant="secondary" class="w-fit">{{ file.class_name }}</Badge>
+                  <Button size="sm" variant="outline" class="w-full sm:w-auto" @click="downloadFile(file.download_url, file.file_name)">
                     Download
                   </Button>
                 </div>
@@ -262,7 +262,7 @@ const refreshRecentFiles = async () => {
       </Card>
 
       <!-- File Statistics -->
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle class="text-sm font-medium">Total Files</CardTitle>
@@ -323,7 +323,7 @@ const refreshRecentFiles = async () => {
           <CardDescription>Breakdown of your uploaded files by type</CardDescription>
         </CardHeader>
         <CardContent>
-          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             <div class="text-center p-4 border rounded-lg">
               <div class="text-3xl mb-2">📄</div>
               <p class="font-semibold">Documents</p>

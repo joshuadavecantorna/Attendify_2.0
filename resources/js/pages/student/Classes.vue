@@ -46,9 +46,9 @@ const getAttendanceBadge = (rate: number) => {
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="flex h-full flex-1 flex-col gap-4 sm:gap-6 p-3 sm:p-6">
       <!-- Header -->
-      <div>
-        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold">My Classes</h1>
-        <p class="text-sm sm:text-base text-muted-foreground">View your enrolled classes and attendance summary</p>
+      <div class="flex flex-col gap-2">
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold leading-tight">My Classes</h1>
+        <p class="text-sm sm:text-base text-muted-foreground leading-snug">View your enrolled classes and attendance summary</p>
       </div>
 
       <!-- Classes Grid -->

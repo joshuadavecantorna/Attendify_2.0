@@ -110,15 +110,15 @@ const clearFilters = () => {
   <Head title="Attendance History" />
 
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="flex h-full flex-1 flex-col gap-6 p-6">
+    <div class="flex h-full flex-1 flex-col gap-6 p-4 sm:p-6">
       <!-- Header -->
-      <div>
-        <h1 class="text-3xl font-bold">Attendance History</h1>
-        <p class="text-muted-foreground">View your complete attendance record across all classes</p>
+      <div class="flex flex-col gap-2">
+        <h1 class="text-2xl sm:text-3xl font-bold leading-tight">Attendance History</h1>
+        <p class="text-sm sm:text-base text-muted-foreground leading-snug">View your complete attendance record across all classes</p>
       </div>
 
       <!-- Summary Cards -->
-      <div class="grid gap-4 md:grid-cols-4">
+      <div class="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-4">
         <Card>
           <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle class="text-sm font-medium">Total Sessions</CardTitle>

@@ -419,21 +419,19 @@ const attendanceRate = computed(() => {
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-          <div class="p-6">
-            <div class="flex items-center justify-between">
-              <div>
-                <h1 class="text-2xl font-bold text-gray-900">{{ session.session_name }}</h1>
-                <p class="text-gray-600">
-                  {{ session.class?.name || 'Class' }} • {{ session.session_date }} 
-                  <span class="ml-2">
-                    <Badge :variant="session.status === 'active' ? 'default' : 'secondary'">
-                      {{ session.status }}
-                    </Badge>
-                  </span>
+          <div class="p-4 sm:p-6">
+            <div class="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-center md:justify-between">
+              <div class="space-y-2">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">{{ session.session_name }}</h1>
+                <p class="text-gray-600 text-sm sm:text-base flex flex-wrap items-center gap-2">
+                  <span class="truncate">{{ session.class?.name || 'Class' }} • {{ session.session_date }}</span>
+                  <Badge :variant="session.status === 'active' ? 'default' : 'secondary'" class="shrink-0">
+                    {{ session.status }}
+                  </Badge>
                 </p>
               </div>
-              <div class="flex gap-3">
-                <Button @click="openQRCodeDisplay" :disabled="session.status !== 'active'">
+              <div class="flex flex-col sm:flex-row flex-wrap gap-3 w-full md:w-auto">
+                <Button @click="openQRCodeDisplay" :disabled="session.status !== 'active'" class="w-full sm:w-auto">
                   <Eye class="h-4 w-4 mr-2" />
                   Show QR Code
                 </Button>
@@ -441,6 +439,7 @@ const attendanceRate = computed(() => {
                   variant="outline" 
                   @click="endSession"
                   :disabled="endSessionForm.processing || session.status !== 'active'"
+                  class="w-full sm:w-auto"
                 >
                   <Clock class="h-4 w-4 mr-2" />
                   {{ endSessionForm.processing ? 'Ending...' : 'End Session' }}

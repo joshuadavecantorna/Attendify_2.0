@@ -93,24 +93,30 @@ const getAttendanceLabel = (rate: number) => {
   if (rate >= 60) return 'Fair';
   return 'Poor';
 };
+
+const expandedStudentId = ref<number | null>(null);
+
+const toggleStudent = (id: number) => {
+  expandedStudentId.value = expandedStudentId.value === id ? null : id;
+};
 </script>
 
 <template>
   <Head title="Student Reports" />
   
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="container mx-auto p-6 space-y-6">
+    <div class="container mx-auto p-4 sm:p-6 space-y-6">
       
       <!-- Header Section -->
       <div class="space-y-2">
-        <h1 class="text-3xl font-bold tracking-tight">Student Reports</h1>
-        <p class="text-muted-foreground">
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Student Reports</h1>
+        <p class="text-sm sm:text-base text-muted-foreground">
           Individual student performance and attendance analytics
         </p>
       </div>
 
       <!-- Summary Stats -->
-      <div class="grid gap-4 md:grid-cols-4">
+      <div class="grid gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle class="text-sm font-medium">Total Students</CardTitle>
@@ -178,7 +184,37 @@ const getAttendanceLabel = (rate: number) => {
             </p>
           </div>
           
-          <Table v-else>
+          <!-- Mobile cards -->
+          <div v-else class="space-y-3 sm:hidden">
+            <div v-for="student in students" :key="student.id" class="border rounded-lg p-4 bg-card/50">
+              <button class="w-full text-left space-y-2" @click="toggleStudent(student.id)">
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <div class="font-semibold leading-tight">{{ student.name }}</div>
+                    <div class="text-sm text-muted-foreground break-all">{{ student.email }}</div>
+                    <div class="text-xs text-muted-foreground">ID: {{ student.student_id }}</div>
+                  </div>
+                  <Badge :variant="getAttendanceBadge(student.attendance_rate)" class="shrink-0">
+                    {{ getAttendanceLabel(student.attendance_rate) }}
+                  </Badge>
+                </div>
+              </button>
+
+              <transition name="fade">
+                <div v-if="expandedStudentId === student.id" class="mt-2 space-y-2 text-sm">
+                  <div class="text-muted-foreground">Class: {{ student.class_name }}</div>
+                  <div class="flex flex-wrap gap-2">
+                    <span>Sessions: {{ student.total_sessions }}</span>
+                    <span class="text-green-600">Present: {{ student.present_count }}</span>
+                    <span class="text-muted-foreground">Rate: {{ student.attendance_rate }}%</span>
+                  </div>
+                </div>
+              </transition>
+            </div>
+          </div>
+
+          <!-- Desktop table -->
+          <Table v-else class="hidden sm:table">
             <TableHeader>
               <TableRow>
                 <TableHead>Student</TableHead>

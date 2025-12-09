@@ -88,12 +88,12 @@ const breadcrumbs = [
   <Head title="Teacher Reports" />
   
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="container mx-auto p-6 space-y-6">
+    <div class="container mx-auto p-4 sm:p-6 space-y-6">
       
       <!-- Header Section -->
       <div class="space-y-2">
-        <h1 class="text-3xl font-bold tracking-tight">Reports & Analytics</h1>
-        <p class="text-muted-foreground">
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Reports & Analytics</h1>
+        <p class="text-sm sm:text-base text-muted-foreground">
           View detailed reports and analytics for your classes
         </p>
       </div>

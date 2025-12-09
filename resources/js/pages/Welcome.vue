@@ -11,24 +11,24 @@ import { Head, Link } from '@inertiajs/vue3';
     <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <!-- Header Navigation -->
         <header class="w-full px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
-            <nav class="flex items-center justify-between max-w-7xl mx-auto">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
+            <nav class="flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-center sm:justify-between max-w-7xl mx-auto">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 shrink-0 rounded-lg flex items-center justify-center border border-white/40 dark:border-white/10 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-500 dark:to-indigo-500 shadow-sm">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
                         </svg>
                     </div>
-                    <div>
-                        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Attendify</h1>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Smart Attendance Management</p>
+                    <div class="min-w-0">
+                        <h1 class="text-xl font-bold text-gray-900 dark:text-white leading-tight">Attendify</h1>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 leading-snug">Smart Attendance Management</p>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-4">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
                     <Link
                         v-if="$page.props.auth.user"
                         :href="dashboard()"
-                        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                        class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium w-full sm:w-auto"
                         preserve-scroll
                     >
                         Dashboard
@@ -36,13 +36,13 @@ import { Head, Link } from '@inertiajs/vue3';
                     <template v-else>
                         <Link
                             :href="login()"
-                            class="inline-block px-4 py-2 text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
+                            class="inline-flex items-center justify-center px-4 py-2 text-gray-700 hover:text-blue-600 dark:text-gray-200 dark:hover:text-blue-300 transition-colors w-full sm:w-auto"
                         >
                             Log in
                         </Link>
                         <Link
                             :href="register()"
-                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                            class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium w-full sm:w-auto"
                         >
                             Get Started
                         </Link>
