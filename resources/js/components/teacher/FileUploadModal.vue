@@ -368,7 +368,8 @@ const uploadFile = async () => {
           reject(new Error('Network error during upload'));
         });
 
-        xhr.open('POST', '/teacher/files/upload');
+        // Backend endpoint is /files/upload (no /teacher prefix)
+        xhr.open('POST', '/files/upload');
         xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken || '');
         xhr.setRequestHeader('Accept', 'application/json');
         xhr.send(formData);
@@ -377,7 +378,8 @@ const uploadFile = async () => {
       // Handle successful upload
       if ((response as any).success) {
         fileObj.uploadStatus = 'completed';
-        uploadedFiles.push(...(response as any).files);
+        const returned = (response as any).uploadedFiles ?? (response as any).files ?? [];
+        uploadedFiles.push(...returned);
       } else {
         throw new Error((response as any).message || 'Upload failed');
       }
@@ -407,7 +409,7 @@ const uploadFile = async () => {
     }
   } else {
     // All files failed
-    errorMessage.value = 'All file uploaded succesfully.';
+    errorMessage.value = 'All files failed to upload.';
   }
 
   setTimeout(() => {

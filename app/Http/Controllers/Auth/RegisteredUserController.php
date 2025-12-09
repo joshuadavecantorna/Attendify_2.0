@@ -48,6 +48,9 @@ class RegisteredUserController extends Controller
 
         // Use database transaction to ensure data consistency
         DB::transaction(function () use ($request) {
+            // Ensure PostgreSQL sequences are aligned before inserts to avoid duplicate key errors
+            $this->syncUserSequence();
+
             // Create the user
             $user = User::create([
                 'name' => $request->name,
@@ -213,5 +216,25 @@ class RegisteredUserController extends Controller
             
             $section = $sectionCode;
         }
+    }
+
+    /**
+     * Align the users_id_seq sequence with the current max(id) to prevent duplicate key violations.
+     */
+    private function syncUserSequence(): void
+    {
+        // Grab current maximum id from users table
+        $maxId = (int) DB::table('users')->max('id');
+
+        // Calculate the next id we expect to use
+        $nextId = $maxId + 1;
+
+        // setval(..., false) ensures the next nextval returns exactly $nextId
+        DB::statement("SELECT setval('users_id_seq', ?, false)", [$nextId]);
+
+        Log::info('Synchronized users_id_seq', [
+            'max_id' => $maxId,
+            'next_id' => $nextId
+        ]);
     }
 }

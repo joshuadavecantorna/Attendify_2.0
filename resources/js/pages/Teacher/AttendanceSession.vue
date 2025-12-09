@@ -198,17 +198,9 @@ const onScanSuccess = async (studentData: any) => {
     if (result.success) {
       scanSuccess.value = result.student;
       scanError.value = '';
-      
-      // Update the attendance records
-      if (result.student?.id && !props.attendance_records.includes(result.student.id)) {
-        props.attendance_records.push(result.student.id);
-      }
-      
-      // Show success message briefly, then close scanner
-      setTimeout(() => {
-        closeQRScanner();
-        scanSuccess.value = null;
-      }, 2000);
+
+      // Immediately refresh data so the UI reflects the new status (removes from Absent list)
+      router.reload();
     } else {
       scanError.value = result.message || 'Failed to mark attendance';
     }
@@ -271,19 +263,11 @@ const markManualAttendance = async () => {
     const data = await response.json();
     
     if (data.success) {
-      // Update attendance records using the student data from response
-      const studentFromResponse = data.student;
-      if (studentFromResponse && !props.attendance_records.includes(studentFromResponse.id)) {
-        props.attendance_records.push(studentFromResponse.id);
-      }
-      
-      scanSuccess.value = studentFromResponse || targetStudent || { name: manualForm.name || manualForm.student_id };
+      scanSuccess.value = data.student || targetStudent || { name: manualForm.name || manualForm.student_id };
       manualForm.reset();
-      
-      // Reset form
-      setTimeout(() => {
-        scanSuccess.value = null;
-      }, 3000);
+
+      // Reload to reflect new attendance in lists
+      router.reload();
     } else {
       scanError.value = data.message || 'Failed to mark attendance';
     }
@@ -344,23 +328,12 @@ const uploadAttendanceFile = async () => {
     
     if (data.success) {
       uploadSuccess.value = `${data.processed || 0} attendance records processed successfully.`;
-      
-      // Update attendance records with newly marked students
-      if (data.records && Array.isArray(data.records)) {
-        data.records.forEach((record: any) => {
-          if (!props.attendance_records.includes(record.student_id)) {
-            props.attendance_records.push(record.student_id);
-          }
-        });
-      }
-      
+
       // Reset file input
       selectedFiles.value = [];
-      
-      setTimeout(() => {
-        fileUploadProgress.value = 0;
-        uploadSuccess.value = '';
-      }, 5000);
+
+      // Reload to pull fresh attendance state (removes absent flag immediately)
+      router.reload();
     } else {
       fileUploadError.value = data.message || 'Failed to process attendance file';
     }

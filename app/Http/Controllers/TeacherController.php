@@ -37,6 +37,18 @@ class TeacherController extends Controller
             'recentActivity' => $recentActivity
         ]);
     }
+    
+    /**
+     * Keep class_models id sequence aligned with current max(id).
+     */
+    private function syncClassModelSequence(): void
+    {
+        $seq = DB::selectOne("SELECT pg_get_serial_sequence('class_models', 'id') AS seq");
+        if ($seq && $seq->seq) {
+            DB::statement("SELECT setval('" . $seq->seq . "', (SELECT COALESCE(MAX(id), 0) FROM class_models))");
+            Log::info('Synced class_models sequence');
+        }
+    }
 
     /**
      * API endpoint for real-time dashboard updates
@@ -128,6 +140,9 @@ class TeacherController extends Controller
             ]);
 
             $teacher = $this->getCurrentTeacher();
+
+            // Ensure class_models id sequence is in sync to avoid duplicate key errors
+            $this->syncClassModelSequence(); // Ensure sequence is synced before creating a class
 
             // Use provided class code or generate one
             $classCode = $request->input('class_code') ? trim($request->input('class_code')) : $this->generateUniqueClassCode($request->course, $request->section, $request->year);
@@ -1394,7 +1409,9 @@ class TeacherController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => count($uploadedFiles) . ' file(s) uploaded successfully',
-                'uploadedFiles' => $uploadedFiles
+                // keep both keys for frontend compatibility
+                'uploadedFiles' => $uploadedFiles,
+                'files' => $uploadedFiles
             ]);
         }
 
@@ -3740,7 +3757,41 @@ class TeacherController extends Controller
                 'review_notes' => 'nullable|string|max:1000',
             ]);
 
+            DB::beginTransaction();
+
+            // Mark the excuse as approved
             $excuseRequest->approve($teacher, $validated['review_notes'] ?? null);
+
+            // Also set the attendance record for this session/student to excused
+            if ($excuseRequest->attendance_session_id && $excuseRequest->student_id) {
+                $record = AttendanceRecord::firstOrNew([
+                    'attendance_session_id' => $excuseRequest->attendance_session_id,
+                    'student_id' => $excuseRequest->student_id,
+                ]);
+
+                $record->status = 'excused';
+                $record->marked_at = $record->marked_at ?? now();
+                $record->marked_by = $record->marked_by ?? 'teacher';
+                $record->notes = 'Excuse approved by teacher';
+                $record->save();
+
+                // Refresh session counts
+                $presentCount = AttendanceRecord::where('attendance_session_id', $excuseRequest->attendance_session_id)
+                    ->where('status', 'present')
+                    ->count();
+
+                $excusedCount = AttendanceRecord::where('attendance_session_id', $excuseRequest->attendance_session_id)
+                    ->where('status', 'excused')
+                    ->count();
+
+                AttendanceSession::where('id', $excuseRequest->attendance_session_id)
+                    ->update([
+                        'present_count' => $presentCount,
+                        'excused_count' => $excusedCount,
+                    ]);
+            }
+
+            DB::commit();
 
             $payload = [
                 'success' => true,
@@ -3753,9 +3804,12 @@ class TeacherController extends Controller
 
             return redirect()->back()->with($payload);
         } catch (\Throwable $e) {
+            DB::rollBack();
+
             \Log::error('Approve excuse request failed', [
                 'request_id' => $requestId,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             $payload = [
@@ -3789,7 +3843,36 @@ class TeacherController extends Controller
                 'review_notes' => 'required|string|max:1000',
             ]);
 
+            DB::beginTransaction();
+
             $excuseRequest->reject($teacher, $validated['review_notes']);
+
+            // If there is an attendance record marked excused/present for this session/student, keep it absent on rejection
+            if ($excuseRequest->attendance_session_id && $excuseRequest->student_id) {
+                AttendanceRecord::where('attendance_session_id', $excuseRequest->attendance_session_id)
+                    ->where('student_id', $excuseRequest->student_id)
+                    ->update([
+                        'status' => 'absent',
+                        'notes' => 'Excuse rejected by teacher',
+                        'marked_by' => 'teacher',
+                    ]);
+
+                $presentCount = AttendanceRecord::where('attendance_session_id', $excuseRequest->attendance_session_id)
+                    ->where('status', 'present')
+                    ->count();
+
+                $excusedCount = AttendanceRecord::where('attendance_session_id', $excuseRequest->attendance_session_id)
+                    ->where('status', 'excused')
+                    ->count();
+
+                AttendanceSession::where('id', $excuseRequest->attendance_session_id)
+                    ->update([
+                        'present_count' => $presentCount,
+                        'excused_count' => $excusedCount,
+                    ]);
+            }
+
+            DB::commit();
 
             $payload = [
                 'success' => true,
@@ -3802,9 +3885,12 @@ class TeacherController extends Controller
 
             return redirect()->back()->with($payload);
         } catch (\Throwable $e) {
+            DB::rollBack();
+
             \Log::error('Reject excuse request failed', [
                 'request_id' => $requestId,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             $payload = [
