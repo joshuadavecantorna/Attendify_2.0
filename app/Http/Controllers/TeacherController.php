@@ -773,19 +773,38 @@ class TeacherController extends Controller
         if ($seq && $seq->seq) {
             DB::statement("SELECT setval('" . $seq->seq . "', (SELECT COALESCE(MAX(id), 0) FROM attendance_records))");
         }
+        try {
+            $record = AttendanceRecord::updateOrCreate(
+                [
+                    'attendance_session_id' => $sessionId,
+                    'student_id' => $student->id // Use the database ID for attendance records
+                ],
+                [
+                    'status' => $request->status,
+                    'method' => $request->get('method'),
+                    'notes' => $request->notes,
+                    'marked_at' => in_array($request->status, ['present', 'late']) ? now() : null
+                ]
+            );
+        } catch (\Throwable $e) {
+            // Retry once after hard-resyncing the sequence
+            if ($seq && $seq->seq) {
+                DB::statement("SELECT setval('" . $seq->seq . "', (SELECT COALESCE(MAX(id), 0) FROM attendance_records))");
+            }
 
-        $record = AttendanceRecord::updateOrCreate(
-            [
-                'attendance_session_id' => $sessionId,
-                'student_id' => $student->id // Use the database ID for attendance records
-            ],
-            [
-                'status' => $request->status,
-                'method' => $request->get('method'),
-                'notes' => $request->notes,
-                'marked_at' => in_array($request->status, ['present', 'late']) ? now() : null
-            ]
-        );
+            $record = AttendanceRecord::updateOrCreate(
+                [
+                    'attendance_session_id' => $sessionId,
+                    'student_id' => $student->id
+                ],
+                [
+                    'status' => $request->status,
+                    'method' => $request->get('method'),
+                    'notes' => $request->notes,
+                    'marked_at' => in_array($request->status, ['present', 'late']) ? now() : null
+                ]
+            );
+        }
 
         // Update session counts if the method exists
         if (method_exists($session, 'updateCounts')) {
@@ -925,14 +944,28 @@ class TeacherController extends Controller
                 DB::statement("SELECT setval('" . $seq->seq . "', (SELECT COALESCE(MAX(id), 0) FROM attendance_records))");
             }
 
-            // Mark attendance as present
-            $record = AttendanceRecord::create([
-                'attendance_session_id' => $sessionId,
-                'student_id' => $student->id,
-                'status' => 'present',
-                'method' => 'qr_scan',
-                'marked_at' => now()
-            ]);
+                // Mark attendance as present (retry once on duplicate id)
+                try {
+                    $record = AttendanceRecord::create([
+                        'attendance_session_id' => $sessionId,
+                        'student_id' => $student->id,
+                        'status' => 'present',
+                        'method' => 'qr_scan',
+                        'marked_at' => now()
+                    ]);
+                } catch (\Throwable $e) {
+                    if ($seq && $seq->seq) {
+                        DB::statement("SELECT setval('" . $seq->seq . "', (SELECT COALESCE(MAX(id), 0) FROM attendance_records))");
+                    }
+
+                    $record = AttendanceRecord::create([
+                        'attendance_session_id' => $sessionId,
+                        'student_id' => $student->id,
+                        'status' => 'present',
+                        'method' => 'qr_scan',
+                        'marked_at' => now()
+                    ]);
+                }
 
             // Update session counts
             try {
