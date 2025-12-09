@@ -16,7 +16,7 @@ class OllamaService
     public function __construct()
     {
         $this->model = config('ollama.model', 'qwen2.5:7b');
-        $this->baseUrl = config('ollama.url', 'http://localhost:11434');
+        $this->baseUrl = config('ollama.host', 'http://localhost:11434');
         $this->timeout = config('ollama.timeout', 60);
         $this->stream = config('ollama.stream', false);
     }
