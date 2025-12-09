@@ -39,6 +39,7 @@ class OllamaService
     {
         try {
             $resp = Http::withOptions(['connect_timeout' => 2])
+                ->withHeaders(['ngrok-skip-browser-warning' => 'true'])
                 ->timeout(3)
                 ->get($this->baseUrl);
             return $resp->successful();
@@ -91,6 +92,7 @@ class OllamaService
                 }
 
                 $response = Http::withOptions(['stream' => true, 'connect_timeout' => 5])
+                    ->withHeaders(['ngrok-skip-browser-warning' => 'true'])
                     ->timeout(115)
                     ->post("{$this->baseUrl}/api/generate", $data);
 
@@ -147,6 +149,7 @@ class OllamaService
                 try {
                     $attempts++;
                     $response = Http::withOptions(['connect_timeout' => 5])
+                        ->withHeaders(['ngrok-skip-browser-warning' => 'true'])
                         ->timeout($this->timeout)
                         ->post("{$this->baseUrl}/api/{$endpoint}", $data);
                     
