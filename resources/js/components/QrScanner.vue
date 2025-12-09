@@ -1084,34 +1084,37 @@ const getYearBadgeVariant = (year: string) => {
       <div class="flex-1 overflow-hidden">
         <Tabs :value="activeTab" class="h-full flex flex-col">
           <div class="flex-shrink-0 border-b bg-muted/30">
-            <div class="px-6">
+            <div class="px-3 sm:px-6">
               <TabsList class="w-full grid grid-cols-3 bg-transparent h-auto p-0">
                 <TabsTrigger 
                   value="camera" 
                   @click="switchToCamera"
-                  class="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3"
+                  class="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 text-xs sm:text-sm"
                 >
-                  <Camera class="h-4 w-4 mr-2" />
-                  QR Scan (Auto Present)
-                  <Badge v-if="!isSecureContext" variant="destructive" class="ml-2 h-4 px-1 text-xs">
+                  <Camera class="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span class="hidden sm:inline">QR Scan (Auto Present)</span>
+                  <span class="inline sm:hidden">QR Scan</span>
+                  <Badge v-if="!isSecureContext" variant="destructive" class="ml-1 sm:ml-2 h-4 px-1 text-xs">
                     HTTPS
                   </Badge>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="manual" 
                   @click="switchToManual"
-                  class="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3"
+                  class="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 text-xs sm:text-sm"
                 >
-                  <User class="h-4 w-4 mr-2" />
-                  Manual Lookup
+                  <User class="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span class="hidden sm:inline">Manual Lookup</span>
+                  <span class="inline sm:hidden">Manual</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="upload" 
                   @click="switchToUpload"
-                  class="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3"
+                  class="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-3 text-xs sm:text-sm"
                 >
-                  <FileUp class="h-4 w-4 mr-2" />
-                  File Upload
+                  <FileUp class="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span class="hidden sm:inline">File Upload</span>
+                  <span class="inline sm:hidden">Upload</span>
                 </TabsTrigger>
               </TabsList>
             </div>

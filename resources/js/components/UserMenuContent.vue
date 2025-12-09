@@ -4,16 +4,29 @@ import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSep
 import type { User } from '@/types';
 import { Link, router } from '@inertiajs/vue3';
 import { LogOut, Settings } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 interface Props {
     user: User;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
+
+const settingsUrl = computed(() => {
+    const role = props.user.role?.toLowerCase();
+    if (role === 'teacher') return '/teacher/settings';
+    if (role === 'admin') return '/admin/settings';
+    if (role === 'student') return '/settings/profile';
+    return '/settings/profile';
+});
 
 const handleLogout = () => {
-    router.post('/logout');
+    router.post('/logout', {}, {
+        preserveState: false,
+        preserveScroll: false,
+    });
 };
+
 </script>
 
 <template>
@@ -25,7 +38,7 @@ const handleLogout = () => {
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
         <DropdownMenuItem :as-child="true">
-            <Link class="block w-full" href="/profile" as="button">
+            <Link class="block w-full cursor-pointer" :href="settingsUrl">
                 <Settings class="mr-2 h-4 w-4" />
                 Settings
             </Link>
@@ -33,7 +46,7 @@ const handleLogout = () => {
     </DropdownMenuGroup>
     <DropdownMenuSeparator />
     <DropdownMenuItem :as-child="true">
-        <button class="flex w-full items-center" @click="handleLogout">
+        <button class="flex w-full items-center cursor-pointer" @click="handleLogout">
             <LogOut class="mr-2 h-4 w-4" />
             Log out
         </button>

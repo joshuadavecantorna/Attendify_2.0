@@ -158,24 +158,24 @@ const mockClassData = (classItem: ClassItem) => ({
   <Head title="Teacher Classes" />
   
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="container mx-auto p-6 space-y-6">
+    <div class="container mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
       
       <!-- Header Section -->
-      <div class="flex items-center justify-between">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div class="space-y-2">
-          <h1 class="text-3xl font-bold tracking-tight">Class Management</h1>
-          <p class="text-muted-foreground">
+          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Class Management</h1>
+          <p class="text-sm sm:text-base text-muted-foreground">
             Manage your classes, students, and class materials
           </p>
         </div>
-        <Button @click="openCreateDialog">
+        <Button @click="openCreateDialog" class="w-full sm:w-auto">
           <Plus class="h-4 w-4 mr-2" />
           Create New Class
         </Button>
       </div>
 
       <!-- Quick Stats Cards -->
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div class="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle class="text-sm font-medium">Total Classes</CardTitle>

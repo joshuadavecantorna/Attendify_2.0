@@ -107,36 +107,38 @@ const startAttendance = () => {
   <Head :title="`${props.classData.name} - Class Details`" />
   
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="container mx-auto p-6 space-y-6">
+    <div class="container mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
       
       <!-- Header Section -->
-      <div class="flex items-center justify-between">
-        <div>
-          <div class="flex items-center gap-3 mb-2">
-            <Button variant="outline" size="sm" @click="$inertia.visit('/teacher/classes')">
-              <ArrowLeft class="h-4 w-4 mr-1" />
-              Back to Classes
-            </Button>
-            <h1 class="text-3xl font-bold tracking-tight">{{ classData.name }}</h1>
+      <div class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex-1">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+              <Button variant="outline" size="sm" @click="$inertia.visit('/teacher/classes')" class="w-fit">
+                <ArrowLeft class="h-4 w-4 mr-1" />
+                Back to Classes
+              </Button>
+              <h1 class="text-2xl sm:text-3xl font-bold tracking-tight break-words">{{ classData.name }}</h1>
+            </div>
+            <p class="text-sm sm:text-base text-muted-foreground">
+              {{ classData.course }} - Section {{ classData.section }} ({{ classData.year }})
+            </p>
           </div>
-          <p class="text-muted-foreground">
-            {{ classData.course }} - Section {{ classData.section }} ({{ classData.year }})
-          </p>
-        </div>
-        <div class="flex gap-2">
-          <Button @click="startAttendance">
-            <Clock class="h-4 w-4 mr-2" />
-            Take Attendance
-          </Button>
-          <Button variant="outline" @click="showAddStudentDialog = true">
-            <Plus class="h-4 w-4 mr-2" />
-            Add Student
-          </Button>
+          <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button @click="startAttendance" class="w-full sm:w-auto">
+              <Clock class="h-4 w-4 mr-2" />
+              Take Attendance
+            </Button>
+            <Button variant="outline" @click="showAddStudentDialog = true" class="w-full sm:w-auto">
+              <Plus class="h-4 w-4 mr-2" />
+              Add Student
+            </Button>
+          </div>
         </div>
       </div>
 
       <!-- Class Info Cards -->
-      <div class="grid gap-4 md:grid-cols-4">
+      <div class="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle class="text-sm font-medium">Total Students</CardTitle>
@@ -154,8 +156,8 @@ const startAttendance = () => {
             <Clock class="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div class="text-lg font-bold">{{ classData.schedule_time }}</div>
-            <p class="text-xs text-muted-foreground">
+            <div class="text-lg font-bold">{{ classData.schedule_time?.substring(0, 5) || 'N/A' }}</div>
+            <p class="text-xs text-muted-foreground break-words">
               {{ Array.isArray(classData.schedule_days) && classData.schedule_days.length > 0 ? classData.schedule_days.join(', ') : 'No schedule set' }}
             </p>
           </CardContent>
