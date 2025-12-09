@@ -78,15 +78,23 @@ class ExcuseRequest extends Model
         ]);
 
         // Update the corresponding attendance record if it exists
-        if ($this->attendanceSession) {
-            $attendance = \App\Models\Attendance::where('student_id', $this->student_id)
-                ->where('class_id', $this->attendanceSession->class_id)
-                ->whereDate('date', $this->attendanceSession->session_date)
-                ->first();
+        try {
+            if ($this->attendanceSession) {
+                $attendance = \App\Models\Attendance::where('student_id', $this->student_id)
+                    ->where('class_id', $this->attendanceSession->class_id)
+                    ->whereDate('date', $this->attendanceSession->session_date)
+                    ->first();
 
-            if ($attendance) {
-                $attendance->update(['status' => 'excused']);
+                if ($attendance) {
+                    $attendance->update(['status' => 'excused']);
+                }
             }
+        } catch (\Throwable $e) {
+            // Soft-fail: keep approval, skip attendance sync if model/table is missing
+            \Log::warning('Excuse approval attendance sync failed', [
+                'excuse_request_id' => $this->id,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 

@@ -395,6 +395,12 @@ class TeacherController extends Controller
         $addedStudents = [];
         $skippedCount = 0;
 
+        // Ensure class_student id sequence is in sync to prevent duplicate PK errors
+        $sequence = DB::selectOne("SELECT pg_get_serial_sequence('class_student', 'id') AS seq");
+        if ($sequence && $sequence->seq) {
+            DB::statement("SELECT setval('" . $sequence->seq . "', (SELECT COALESCE(MAX(id), 0) FROM class_student))");
+        }
+
         foreach ($request->student_ids as $studentId) {
             // Check if student is already enrolled
             $exists = DB::table('class_student')
@@ -575,6 +581,12 @@ class TeacherController extends Controller
         // Generate unique QR code for this session
         $qrCode = 'session_' . uniqid() . '_' . time();
 
+        // Ensure attendance_sessions id sequence is in sync
+        $seq = DB::selectOne("SELECT pg_get_serial_sequence('attendance_sessions', 'id') AS seq");
+        if ($seq && $seq->seq) {
+            DB::statement("SELECT setval('" . $seq->seq . "', (SELECT COALESCE(MAX(id), 0) FROM attendance_sessions))");
+        }
+
         $session = AttendanceSession::create([
             'class_id' => $request->class_id,
             'teacher_id' => $teacher->id, // Use teacher's primary key
@@ -611,6 +623,12 @@ class TeacherController extends Controller
 
         // Generate unique QR code for this session
         $qrCode = 'session_' . uniqid() . '_' . time();
+
+        // Ensure attendance_sessions id sequence is in sync
+        $seq = DB::selectOne("SELECT pg_get_serial_sequence('attendance_sessions', 'id') AS seq");
+        if ($seq && $seq->seq) {
+            DB::statement("SELECT setval('" . $seq->seq . "', (SELECT COALESCE(MAX(id), 0) FROM attendance_sessions))");
+        }
 
         // Create a quick session with current date/time
         $session = AttendanceSession::create([
@@ -1263,6 +1281,30 @@ class TeacherController extends Controller
         $classId = $request->input('class_id');
 
         $class = ClassModel::forTeacher($teacher->user_id)->findOrFail($classId);
+
+        // Ensure legacy classes table has this class id for FK constraint on class_files
+        $legacyClassExists = DB::table('classes')->where('id', $classId)->exists();
+        if (!$legacyClassExists) {
+            DB::table('classes')->insert([
+                'id' => $classId,
+                'name' => $class->name,
+                'course' => $class->course ?? 'N/A',
+                'section' => $class->section ?? 'A',
+                'year' => $class->year ?? '1',
+                'teacher_id' => $class->teacher_id,
+                'schedule_time' => $class->schedule_time ? $class->schedule_time : now()->format('H:i:s'),
+                'schedule_days' => json_encode($class->schedule_days ?? []),
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Sync classes sequence after manual id insert
+            $seq = DB::selectOne("SELECT pg_get_serial_sequence('classes', 'id') AS seq");
+            if ($seq && $seq->seq) {
+                DB::statement("SELECT setval('" . $seq->seq . "', (SELECT COALESCE(MAX(id), 0) FROM classes))");
+            }
+        }
 
         $uploadedFiles = [];
 

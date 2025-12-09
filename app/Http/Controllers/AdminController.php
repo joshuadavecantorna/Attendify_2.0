@@ -231,7 +231,7 @@ class AdminController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|unique:users,email|unique:teachers,email',
             'phone' => 'nullable|string|max:20',
             'employee_id' => 'required|string|unique:teachers,teacher_id',
             'department' => 'required|string|max:255',
@@ -281,7 +281,7 @@ class AdminController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $teacher->user_id,
+            'email' => 'required|email|unique:users,email,' . $teacher->user_id . '|unique:teachers,email,' . $id,
             'phone' => 'nullable|string|max:20',
             'employee_id' => 'required|string|unique:teachers,teacher_id,' . $id,
             'department' => 'required|string|max:255',
@@ -390,7 +390,7 @@ class AdminController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|unique:users,email|unique:students,email',
             'phone' => 'nullable|string|max:20',
             'student_id' => 'required|string|unique:students,student_id',
             'year' => 'required|string|max:50',
@@ -452,7 +452,7 @@ class AdminController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . ($student->user_id ?? 'NULL'),
+            'email' => 'required|email|unique:users,email,' . ($student->user_id ?? 'NULL') . '|unique:students,email,' . $id,
             'phone' => 'nullable|string|max:20',
             'student_id' => 'required|string|unique:students,student_id,' . $id,
             'year' => 'required|string|max:50',
