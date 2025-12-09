@@ -768,6 +768,12 @@ class TeacherController extends Controller
             ], 403);
         }
 
+        // Ensure attendance_records id sequence is in sync to avoid duplicate PK errors
+        $seq = DB::selectOne("SELECT pg_get_serial_sequence('attendance_records', 'id') AS seq");
+        if ($seq && $seq->seq) {
+            DB::statement("SELECT setval('" . $seq->seq . "', (SELECT COALESCE(MAX(id), 0) FROM attendance_records))");
+        }
+
         $record = AttendanceRecord::updateOrCreate(
             [
                 'attendance_session_id' => $sessionId,
@@ -783,7 +789,14 @@ class TeacherController extends Controller
 
         // Update session counts if the method exists
         if (method_exists($session, 'updateCounts')) {
-            $session->updateCounts();
+            try {
+                $session->updateCounts();
+            } catch (\Throwable $e) {
+                Log::warning('Attendance count update failed', [
+                    'session_id' => $sessionId,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         return response()->json([
@@ -906,6 +919,12 @@ class TeacherController extends Controller
                 ]);
             }
 
+            // Ensure attendance_records id sequence is in sync before insert
+            $seq = DB::selectOne("SELECT pg_get_serial_sequence('attendance_records', 'id') AS seq");
+            if ($seq && $seq->seq) {
+                DB::statement("SELECT setval('" . $seq->seq . "', (SELECT COALESCE(MAX(id), 0) FROM attendance_records))");
+            }
+
             // Mark attendance as present
             $record = AttendanceRecord::create([
                 'attendance_session_id' => $sessionId,
@@ -916,7 +935,14 @@ class TeacherController extends Controller
             ]);
 
             // Update session counts
-            $session->updateCounts();
+            try {
+                $session->updateCounts();
+            } catch (\Throwable $e) {
+                Log::warning('Attendance count update failed (QR)', [
+                    'session_id' => $sessionId,
+                    'error' => $e->getMessage(),
+                ]);
+            }
 
             return response()->json([
                 'success' => true,
