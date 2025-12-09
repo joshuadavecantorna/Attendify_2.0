@@ -1122,11 +1122,12 @@ const getYearBadgeVariant = (year: string) => {
           </div>
 
           <!-- Camera Tab Content -->
-          <TabsContent value="camera" class="flex-1 m-0 p-4 sm:p-6 overflow-auto data-[state=inactive]:hidden">
-            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 h-full">
-              <!-- Camera Container -->
-              <div class="xl:col-span-2 flex flex-col">
-                <div class="bg-black rounded-xl overflow-hidden relative flex-1 flex items-center justify-center min-h-[320px] sm:min-h-[420px]">
+          <TabsContent value="camera" class="flex-1 m-0 p-0 data-[state=inactive]:hidden flex flex-col overflow-hidden">
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6">
+              <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 h-fit">
+                <!-- Camera Container -->
+                <div class="xl:col-span-2 flex flex-col h-[400px] sm:h-[500px]">
+                  <div class="bg-black rounded-xl overflow-hidden relative flex-1 flex items-center justify-center w-full">
                   <QrcodeStream
                     v-if="camera !== 'off' && isSecureContext"
                     :camera="camera"

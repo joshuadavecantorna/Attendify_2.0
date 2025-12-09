@@ -91,7 +91,7 @@ const submitExcuseRequest = () => {
       <!-- Header -->
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div class="space-y-1">
-          <h1 class="text-2xl sm:text-3xl font-bold leading-tight">Excuse Requests</h1>
+          <h1 class="text-2xl sm:text-3xl font-bold leading-tight text-foreground">Excuse Requests</h1>
           <p class="text-sm sm:text-base text-muted-foreground">Submit and track your absence excuse requests</p>
         </div>
         
@@ -229,11 +229,11 @@ const submitExcuseRequest = () => {
         <CardContent>
           <div class="space-y-4">
             <div v-for="request in requests.data" :key="request.id" 
-                 class="border rounded-lg p-4 space-y-4">
+                 class="border rounded-lg p-4 space-y-4 dark:border-slate-700">
               <!-- Header -->
               <div class="flex items-start justify-between">
                 <div>
-                  <h3 class="font-medium">{{ request.attendance_session.class.name }}</h3>
+                  <h3 class="font-medium text-foreground">{{ request.attendance_session.class.name }}</h3>
                   <p class="text-sm text-muted-foreground">
                     Absence Date: {{ new Date(request.attendance_session.session_date).toLocaleDateString() }} at {{ new Date(request.attendance_session.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }}
                   </p>
@@ -251,29 +251,29 @@ const submitExcuseRequest = () => {
               <div class="grid gap-3 md:grid-cols-2">
                 <div>
                   <p class="text-sm font-medium text-muted-foreground">Reason</p>
-                  <p class="text-sm">{{ request.reason }}</p>
+                  <p class="text-sm text-foreground">{{ request.reason }}</p>
                 </div>
                 <div>
                   <p class="text-sm font-medium text-muted-foreground">Submitted On</p>
-                  <p class="text-sm">{{ new Date(request.submitted_at).toLocaleString() }}</p>
+                  <p class="text-sm text-foreground">{{ new Date(request.submitted_at).toLocaleString() }}</p>
                 </div>
                 <div v-if="request.attachment_path">
                   <p class="text-sm font-medium text-muted-foreground">Attachment</p>
-                  <a :href="`/storage/${request.attachment_path}`" target="_blank" class="text-sm text-blue-600 hover:underline">View Document</a>
+                  <a :href="`/storage/${request.attachment_path}`" target="_blank" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">View Document</a>
                 </div>
               </div>
 
 
               <!-- Review Info -->
-              <div v-if="request.status !== 'pending'" class="border-t pt-4 mt-4 grid gap-3 md:grid-cols-2">
+              <div v-if="request.status !== 'pending'" class="border-t pt-4 mt-4 grid gap-3 md:grid-cols-2 dark:border-slate-700">
 
                 <div>
                   <p class="text-sm font-medium text-muted-foreground">Reviewed On</p>
-                  <p class="text-sm">{{ request.reviewed_at ? new Date(request.reviewed_at).toLocaleString() : 'N/A' }}</p>
+                  <p class="text-sm text-foreground">{{ request.reviewed_at ? new Date(request.reviewed_at).toLocaleString() : 'N/A' }}</p>
                 </div>
                 <div v-if="request.review_notes" class="mt-3">
                   <p class="text-sm font-medium text-muted-foreground">Comments</p>
-                  <p class="text-sm">{{ request.review_notes }}</p>
+                  <p class="text-sm text-foreground">{{ request.review_notes }}</p>
                 </div>
               </div>
             </div>
@@ -282,7 +282,7 @@ const submitExcuseRequest = () => {
             <!-- No Requests Message -->
             <div v-if="requests.data.length === 0" class="text-center py-8">
               <FileText class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 class="text-lg font-medium mb-2">No excuse requests</h3>
+              <h3 class="text-lg font-medium text-foreground mb-2">No excuse requests</h3>
               <p class="text-muted-foreground mb-4">You haven't submitted any excuse requests yet.</p>
               <Button @click="isDialogOpen = true">
                 <Plus class="mr-2 h-4 w-4" />

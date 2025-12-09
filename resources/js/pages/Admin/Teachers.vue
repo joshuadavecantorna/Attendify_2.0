@@ -276,7 +276,7 @@ const filteredTeachers = computed(() => {
 
     <!-- Create Teacher Dialog -->
     <Dialog v-model:open="showCreateDialog">
-      <DialogContent class="sm:max-w-[425px]">
+      <DialogContent class="w-[95vw] sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Teacher</DialogTitle>
           <DialogDescription>
@@ -405,7 +405,7 @@ const filteredTeachers = computed(() => {
 
     <!-- Edit Teacher Dialog -->
     <Dialog v-model:open="showEditDialog">
-      <DialogContent class="sm:max-w-[425px]">
+      <DialogContent class="w-[95vw] sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Teacher</DialogTitle>
           <DialogDescription>

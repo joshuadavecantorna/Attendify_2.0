@@ -1,6 +1,5 @@
 ![1759654648089](image/Classes/1759654648089.png)![1759654650236](image/Classes/1759654650236.png)![1759654652845](image/Classes/1759654652845.png)![1759654662174](image/Classes/1759654662174.png)![1759654672935](image/Classes/1759654672935.png)![1759654673259](image/Classes/1759654673259.png)![1759654687683](image/Classes/1759654687683.png)<script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
