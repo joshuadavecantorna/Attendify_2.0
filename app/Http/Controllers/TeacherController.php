@@ -2971,7 +2971,7 @@ class TeacherController extends Controller
             'course' => $request->get('course'),
             'year' => $request->get('year'),
             'section' => $request->get('section'),
-            'attendance_threshold' => $request->get('attendance_threshold', 75), // Default 75%
+            'attendance_threshold' => $request->get('attendance_threshold'), // No default - show all students
             'search' => $request->get('search'),
         ];
 
@@ -3116,8 +3116,8 @@ class TeacherController extends Controller
         
 
 
-        // Filter by attendance threshold
-        if ($filters['attendance_threshold']) {
+        // Filter by attendance threshold only if explicitly set
+        if ($filters['attendance_threshold'] !== null && $filters['attendance_threshold'] !== '') {
             $students = $students->filter(function ($student) use ($filters) {
                 return $student['attendance_rate'] >= $filters['attendance_threshold'];
             });
