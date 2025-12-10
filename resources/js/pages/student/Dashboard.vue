@@ -110,6 +110,14 @@ const upcomingClasses = computed(() => {
 // Recent attendance from backend
 const recentAttendance = computed(() => props.recentAttendance ?? []);
 
+// Format date + time for display
+const formatDateTime = (date?: string, time?: string) => {
+  if (!date && !time) return '';
+  const datePart = date ? new Date(date).toLocaleDateString() : '';
+  const timePart = time ? new Date(`1970-01-01T${time}Z`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+  return [datePart, timePart].filter(Boolean).join(' • ');
+};
+
 // Student's enrolled classes for selection
 const enrolledClasses = computed(() => {
   return props.classes || [];
@@ -441,12 +449,12 @@ const getStatusIcon = (status: string) => {
           <CardContent>
             <div class="space-y-3">
               <div v-if="upcomingClasses.length > 0">
-                <div v-for="classItem in upcomingClasses.slice(0, 4)" :key="classItem.class_name" 
+                <div v-for="classItem in upcomingClasses.slice(0, 4)" :key="classItem.id || classItem.class_name" 
                      class="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                   <div class="space-y-1">
-                    <p class="font-medium">{{ classItem.class_name }}</p>
-                    <p class="text-sm text-muted-foreground">{{ classItem.teacher }}</p>
-                    <p class="text-sm text-muted-foreground">Room {{ classItem.room }}</p>
+                    <p class="font-medium">{{ classItem.name || classItem.class_name }}</p>
+                    <p class="text-sm text-muted-foreground">{{ classItem.teacher_name || classItem.teacher }}</p>
+                    <p class="text-sm text-muted-foreground">{{ classItem.room ? `Room ${classItem.room}` : 'Room TBA' }}</p>
                   </div>
                   <div class="text-right">
                     <p class="text-sm font-medium">{{ classItem.time }}</p>
@@ -476,7 +484,7 @@ const getStatusIcon = (status: string) => {
                 <div :class="['w-2 h-2 rounded-full', getStatusColor(record.status)]"></div>
                 <div>
                   <p class="font-medium">{{ record.class_name }}</p>
-                  <p class="text-sm text-muted-foreground">{{ record.session_date }}</p>
+                  <p class="text-sm text-muted-foreground">{{ formatDateTime(record.session_date, record.start_time || record.time) }}</p>
                 </div>
               </div>
               <Badge :variant="record.status === 'present' ? 'default' : record.status === 'excused' ? 'secondary' : 'destructive'">

@@ -37,6 +37,15 @@ const getAttendanceBadge = (rate: number) => {
   if (rate >= 75) return 'secondary';
   return 'destructive';
 };
+
+// Format schedule days into a short, readable label
+const formatScheduleLabel = (classItem: any) => {
+  const days = Array.isArray(classItem?.schedule_days) ? classItem.schedule_days : [];
+  if (!days.length) return 'Schedule not set';
+  return days
+    .map((d: string) => d?.slice(0, 3)?.toUpperCase())
+    .join(', ');
+};
 </script>
 
 <template>
@@ -57,7 +66,7 @@ const getAttendanceBadge = (rate: number) => {
             <div class="flex items-start justify-between">
               <div>
                 <CardTitle class="text-lg">{{ classItem.name }}</CardTitle>
-                <CardDescription class="font-mono text-sm">{{ classItem.course_code || 'N/A' }}</CardDescription>
+                <CardDescription class="font-mono text-sm">{{ formatScheduleLabel(classItem) }}</CardDescription>
               </div>
               <Badge :variant="getAttendanceBadge(classItem.attendance_rate || 0)">
                 {{ classItem.attendance_rate || 0 }}%
