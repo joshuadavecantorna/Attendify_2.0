@@ -49,7 +49,7 @@ class RegisteredUserController extends Controller
         // Use database transaction to ensure data consistency
         DB::transaction(function () use ($request) {
             // Ensure PostgreSQL sequences are aligned before inserts to avoid duplicate key errors
-            $this->syncUserSequence();
+            $this->syncSequences();
 
             // Create the user
             $user = User::create([
@@ -95,6 +95,7 @@ class RegisteredUserController extends Controller
 
         // Create student with explicit PostgreSQL boolean handling
         $student = new Student();
+        $student->user_id = $user->id;
         $student->student_id = $studentId;
         $student->name = $user->name;
         $student->email = $user->email;
@@ -219,22 +220,29 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Align the users_id_seq sequence with the current max(id) to prevent duplicate key violations.
+     * Align PostgreSQL sequences with current max IDs to prevent duplicate key violations.
      */
-    private function syncUserSequence(): void
+    private function syncSequences(): void
     {
-        // Grab current maximum id from users table
-        $maxId = (int) DB::table('users')->max('id');
+        // Sync users table sequence
+        $maxUserId = (int) DB::table('users')->max('id');
+        $nextUserId = $maxUserId + 1;
+        DB::statement("SELECT setval('users_id_seq', ?, false)", [$nextUserId]);
 
-        // Calculate the next id we expect to use
-        $nextId = $maxId + 1;
+        // Sync students table sequence
+        $maxStudentId = (int) DB::table('students')->max('id');
+        $nextStudentId = $maxStudentId + 1;
+        DB::statement("SELECT setval('students_id_seq', ?, false)", [$nextStudentId]);
 
-        // setval(..., false) ensures the next nextval returns exactly $nextId
-        DB::statement("SELECT setval('users_id_seq', ?, false)", [$nextId]);
+        // Sync teachers table sequence
+        $maxTeacherId = (int) DB::table('teachers')->max('id');
+        $nextTeacherId = $maxTeacherId + 1;
+        DB::statement("SELECT setval('teachers_id_seq', ?, false)", [$nextTeacherId]);
 
-        Log::info('Synchronized users_id_seq', [
-            'max_id' => $maxId,
-            'next_id' => $nextId
+        Log::info('Synchronized all sequences', [
+            'users_next_id' => $nextUserId,
+            'students_next_id' => $nextStudentId,
+            'teachers_next_id' => $nextTeacherId
         ]);
     }
 }
