@@ -271,6 +271,28 @@ class StudentController extends Controller
                     ? $this->formatScheduleDisplay($class->schedule_time, $scheduleDays)
                     : 'Schedule TBD';
 
+                // Get files uploaded for this class
+                $files = DB::table('class_files')
+                    ->where('class_id', $class->id)
+                    ->where(function($q) {
+                        $q->whereNull('visibility')
+                          ->orWhere('visibility', 'public');
+                    })
+                    ->orderBy('created_at', 'desc')
+                    ->select('id', 'original_name', 'file_type', 'file_size', 'description', 'created_at')
+                    ->get()
+                    ->map(function($file) {
+                        return [
+                            'id' => $file->id,
+                            'name' => $file->original_name,
+                            'type' => $file->file_type,
+                            'size' => $this->formatFileSize($file->file_size),
+                            'description' => $file->description,
+                            'created_at' => $file->created_at,
+                            'download_url' => route('teacher.files.download', $file->id)
+                        ];
+                    });
+
                 return (object)[
                     'id' => $class->id,
                     'name' => $class->name,
@@ -288,6 +310,7 @@ class StudentController extends Controller
                     'attendance_rate' => $attendanceRate,
                     'total_sessions' => $totalSessions,
                     'attended_sessions' => $presentCount,
+                    'files' => $files,
                 ];
             });
 
@@ -1023,5 +1046,19 @@ class StudentController extends Controller
         }, $days);
         
         return implode(', ', $dayAbbrevs) . ' • ' . $formattedTime;
+    }
+
+    /**
+     * Format file size to human-readable format
+     */
+    private function formatFileSize($bytes)
+    {
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= (1 << (10 * $pow));
+
+        return round($bytes, 2) . ' ' . $units[$pow];
     }
 }

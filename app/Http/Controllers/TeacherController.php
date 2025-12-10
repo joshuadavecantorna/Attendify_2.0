@@ -2975,11 +2975,12 @@ class TeacherController extends Controller
             'search' => $request->get('search'),
         ];
 
-        // Build students query
+        // Build students query to get ALL enrolled students, even those without attendance records
         $studentsQuery = DB::table('class_student')
                           ->join('students', 'class_student.student_id', '=', 'students.id')
                           ->join('class_models', 'class_student.class_model_id', '=', 'class_models.id')
-                          ->where('class_models.teacher_id', $teacher->user_id);
+                          ->where('class_models.teacher_id', $teacher->user_id)
+                          ->where('class_student.status', 'enrolled');
 
         // Apply filters
         if ($filters['class_id']) {
@@ -3027,7 +3028,6 @@ class TeacherController extends Controller
                                     'class_models.section as class_section',
                                     'class_student.created_at as enrolled_at'
                                 )
-                                ->distinct()
                                 ->orderBy('students.name')
                                 ->get();
 
@@ -3950,7 +3950,7 @@ class TeacherController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            \Log::error('Approve excuse request failed', [
+            Log::error('Approve excuse request failed', [
                 'request_id' => $requestId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -4037,7 +4037,7 @@ class TeacherController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            \Log::error('Reject excuse request failed', [
+            Log::error('Reject excuse request failed', [
                 'request_id' => $requestId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),

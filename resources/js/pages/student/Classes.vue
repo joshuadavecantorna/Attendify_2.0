@@ -112,6 +112,25 @@ const formatScheduleLabel = (classItem: any) => {
                 <span>{{ (classItem.total_sessions || 0) - (classItem.attended_sessions || 0) }} missed</span>
               </div>
             </div>
+
+            <!-- Class Files -->
+            <div v-if="classItem.files && classItem.files.length > 0" class="pt-4 border-t">
+              <h4 class="text-sm font-semibold mb-3">📚 Class Materials</h4>
+              <div class="space-y-2">
+                <div v-for="file in classItem.files" :key="file.id" class="flex items-center justify-between p-2 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium truncate">{{ file.name }}</p>
+                    <p class="text-xs text-muted-foreground">{{ file.size }}</p>
+                  </div>
+                  <a 
+                    :href="file.download_url"
+                    class="ml-2 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex-shrink-0"
+                  >
+                    ⬇️ Download
+                  </a>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
