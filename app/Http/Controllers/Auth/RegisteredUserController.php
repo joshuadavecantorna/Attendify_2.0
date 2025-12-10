@@ -37,40 +37,69 @@ class RegisteredUserController extends Controller
             'role' => $request->role
         ]);
 
+        // Validate basic fields
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:users,email',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => 'required|in:student,teacher',
             'class_code' => 'nullable|string|max:255',
             'school_name' => 'nullable|string|max:255',
         ]);
 
+        // Additional validation: check if email exists in students or teachers table
+        if ($request->role === 'student' && Student::where('email', $request->email)->exists()) {
+            return back()->withErrors(['email' => 'This email is already registered as a student.'])->withInput();
+        }
+
+        if ($request->role === 'teacher' && Teacher::where('email', $request->email)->exists()) {
+            return back()->withErrors(['email' => 'This email is already registered as a teacher.'])->withInput();
+        }
+
         // Use database transaction to ensure data consistency
-        DB::transaction(function () use ($request) {
-            // Ensure PostgreSQL sequences are aligned before inserts to avoid duplicate key errors
-            $this->syncSequences();
+        $user = null;
+        
+        try {
+            DB::transaction(function () use ($request, &$user) {
+                // Ensure PostgreSQL sequences are aligned before inserts to avoid duplicate key errors
+                $this->syncSequences();
 
-            // Create the user
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'role' => $request->role,
-            ]);
+                // Create the user
+                $user = User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'role' => $request->role,
+                ]);
 
-            // Create role-specific record
-            if ($request->role === 'student') {
-                $this->createStudentRecord($user, $request);
-            } elseif ($request->role === 'teacher') {
-                $this->createTeacherRecord($user, $request);
+                // Create role-specific record
+                if ($request->role === 'student') {
+                    $this->createStudentRecord($user, $request);
+                } elseif ($request->role === 'teacher') {
+                    $this->createTeacherRecord($user, $request);
+                }
+
+                event(new Registered($user));
+            });
+
+            // Login after transaction completes successfully
+            if ($user) {
+                Auth::login($user);
+                return redirect()->route('dashboard');
             }
 
-            event(new Registered($user));
-            Auth::login($user);
-        });
+            return back()->withErrors(['email' => 'Registration failed. Please try again.'])->withInput();
+        } catch (\Exception $e) {
+            Log::error('Registration failed', [
+                'error' => $e->getMessage(),
+                'email' => $request->email,
+                'role' => $request->role
+            ]);
 
-        return to_route('dashboard');
+            return back()->withErrors([
+                'email' => 'Registration failed. This email may already be in use or there was a database error. Please try a different email.'
+            ])->withInput();
+        }
     }
 
     /**
