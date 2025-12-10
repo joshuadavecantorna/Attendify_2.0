@@ -211,7 +211,7 @@ class StudentController extends Controller
     {
         $student = $this->getCurrentStudent();
 
-        // Get enrolled classes with attendance statistics
+        // Get enrolled classes using fresh joins for accurate attendance stats
         $classes = DB::table('class_student')
             ->join('class_models', 'class_student.class_model_id', '=', 'class_models.id')
             ->join('teachers', 'class_models.teacher_id', '=', 'teachers.user_id')
@@ -232,39 +232,63 @@ class StudentController extends Controller
                 'class_models.room',
                 'class_models.class_code',
                 'users.name as teacher_name',
-                'class_student.enrolled_at',
-                DB::raw("(
-                    SELECT COUNT(*)
-                    FROM attendance_records ar
-                    JOIN attendance_sessions asess ON ar.attendance_session_id = asess.id
-                    WHERE ar.student_id = {$student->id}
-                    AND asess.class_id = class_models.id
-                ) as total_sessions"),
-                DB::raw("(
-                    SELECT COUNT(*)
-                    FROM attendance_records ar
-                    JOIN attendance_sessions asess ON ar.attendance_session_id = asess.id
-                    WHERE ar.student_id = {$student->id}
-                    AND asess.class_id = class_models.id
-                    AND ar.status IN ('present', 'late')
-                ) as present_count")
+                'class_student.enrolled_at'
             )
+            ->orderBy('class_models.name')
             ->get()
-            ->map(function ($class) {
-                $class->attendance_rate = $class->total_sessions > 0
-                    ? round(($class->present_count / $class->total_sessions) * 100)
+            ->map(function ($class) use ($student) {
+                // Count sessions for this class (fresh count)
+                $totalSessions = AttendanceRecord::query()
+                    ->join(
+                        'attendance_sessions',
+                        'attendance_records.attendance_session_id',
+                        '=',
+                        'attendance_sessions.id'
+                    )
+                    ->where('attendance_records.student_id', $student->id)
+                    ->where('attendance_sessions.class_id', $class->id)
+                    ->count();
+
+                // Count present/late records (fresh count)
+                $presentCount = AttendanceRecord::query()
+                    ->join(
+                        'attendance_sessions',
+                        'attendance_records.attendance_session_id',
+                        '=',
+                        'attendance_sessions.id'
+                    )
+                    ->where('attendance_records.student_id', $student->id)
+                    ->where('attendance_sessions.class_id', $class->id)
+                    ->whereIn('attendance_records.status', ['present', 'late'])
+                    ->count();
+
+                $attendanceRate = $totalSessions > 0
+                    ? round(($presentCount / $totalSessions) * 100)
                     : 0;
-                
-                // Format schedule display
+
                 $scheduleDays = json_decode($class->schedule_days, true);
-                $class->schedule_display = $scheduleDays && $class->schedule_time 
+                $scheduleDisplay = $scheduleDays && $class->schedule_time
                     ? $this->formatScheduleDisplay($class->schedule_time, $scheduleDays)
                     : 'Schedule TBD';
-                
-                // Format time only
-                $class->formatted_time = $this->formatTime($class->schedule_time);
-                
-                return $class;
+
+                return (object)[
+                    'id' => $class->id,
+                    'name' => $class->name,
+                    'course' => $class->course,
+                    'section' => $class->section,
+                    'year' => $class->year,
+                    'subject' => $class->subject,
+                    'description' => $class->description,
+                    'room' => $class->room ?? 'TBD',
+                    'schedule_time' => $class->schedule_time,
+                    'schedule_days' => $scheduleDays ?? [],
+                    'class_code' => $class->class_code,
+                    'teacher_name' => $class->teacher_name,
+                    'schedule_display' => $scheduleDisplay,
+                    'attendance_rate' => $attendanceRate,
+                    'total_sessions' => $totalSessions,
+                    'attended_sessions' => $presentCount,
+                ];
             });
 
         return Inertia::render('student/Classes', [

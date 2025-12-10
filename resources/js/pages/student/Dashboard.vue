@@ -243,8 +243,8 @@ const onQRScan = async (qrData: string) => {
       alert(`Success! You have been marked as present.`);
       showQRDialog.value = false;
       selectedClass.value = '';
-      // Refresh page to show updated attendance
-      router.reload();
+      // Force full page reload to refresh all dashboard data
+      window.location.reload();
     } else {
       alert(data.message || 'Failed to mark attendance');
     }
@@ -306,8 +306,8 @@ const submitClassID = async () => {
       showClassIDDialog.value = false;
       selectedClass.value = '';
       manualClassID.value = '';
-      // Refresh page to show updated attendance
-      router.reload();
+      // Force full page reload to refresh all dashboard data
+      window.location.reload();
     } else {
       alert(data.message || 'Failed to mark attendance');
     }

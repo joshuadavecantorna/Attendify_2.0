@@ -195,8 +195,8 @@ const clearFilters = () => {
                 </SelectTrigger>
                 <SelectContent class="bg-background border-input dark:bg-background dark:border-input">
                   <SelectItem value="all" class="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">All classes</SelectItem>
-                  <SelectItem v-for="cls in classes" :key="cls.value" :value="cls.value" class="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                    {{ cls.label }}
+                  <SelectItem v-for="cls in classes" :key="cls.id" :value="String(cls.id)" class="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                    {{ cls.name }} - {{ cls.course }} {{ cls.section }}
                   </SelectItem>
                 </SelectContent>
               </Select>

@@ -89,10 +89,10 @@ const submitExcuseRequest = () => {
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="flex h-full flex-1 flex-col gap-6 p-4 sm:p-6">
       <!-- Header -->
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-white dark:bg-slate-900 rounded-lg p-4 sm:p-6 border dark:border-slate-800 shadow-sm">
         <div class="space-y-1">
-          <h1 class="text-2xl sm:text-3xl font-bold leading-tight text-foreground">Excuse Requests</h1>
-          <p class="text-sm sm:text-base text-muted-foreground">Submit and track your absence excuse requests</p>
+          <h1 class="text-2xl sm:text-3xl font-bold leading-tight text-gray-900 dark:text-white">Excuse Requests</h1>
+          <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">Submit and track your absence excuse requests</p>
         </div>
         
         <!-- New Request Button -->
