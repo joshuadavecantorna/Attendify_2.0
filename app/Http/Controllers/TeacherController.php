@@ -3059,10 +3059,10 @@ class TeacherController extends Controller
             $key = $student->id . '-' . $student->class_id;
             $stats = $attendanceAggregates->get($key);
 
-            $present = $stats->present_count ?? 0;
-            $late = $stats->late_count ?? 0;
-            $excused = $stats->excused_count ?? 0;
-            $absent = $stats->absent_count ?? 0;
+            $present = $stats ? (int)$stats->present_count : 0;
+            $late = $stats ? (int)$stats->late_count : 0;
+            $excused = $stats ? (int)$stats->excused_count : 0;
+            $absent = $stats ? (int)$stats->absent_count : 0;
 
             $totalSessions = $sessionCountsByClass[$student->class_id] ?? 0;
 
