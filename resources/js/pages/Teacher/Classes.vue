@@ -13,6 +13,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm } from '@inertiajs/vue3';
 import { Plus, Edit, Users, Clock, Calendar } from 'lucide-vue-next';
+import Toaster from '@/components/ui/toast/Toaster.vue';
+import { toast } from 'vue-sonner';
 
 // Props from controller
 interface ClassItem {
@@ -113,6 +115,9 @@ const createClass = () => {
     onSuccess: () => {
       showCreateDialog.value = false;
       createForm.reset();
+      toast.success('Class created successfully!', {
+        description: `${createForm.name} has been added to your classes.`,
+      });
       // Refresh the page data to show the new class
       router.reload();
     },
@@ -156,6 +161,7 @@ const mockClassData = (classItem: ClassItem) => ({
 
 <template>
   <Head title="Teacher Classes" />
+  <Toaster />
   
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="container mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
