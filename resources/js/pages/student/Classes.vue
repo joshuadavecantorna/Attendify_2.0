@@ -117,16 +117,19 @@ const formatScheduleLabel = (classItem: any) => {
             <div v-if="classItem.files && classItem.files.length > 0" class="pt-4 border-t">
               <h4 class="text-sm font-semibold mb-3">📚 Class Materials</h4>
               <div class="space-y-2">
-                <div v-for="file in classItem.files" :key="file.id" class="flex items-center justify-between p-2 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                <div v-for="file in classItem.files" :key="file.id" class="flex items-center justify-between p-2 bg-secondary/50 rounded hover:bg-secondary transition-colors">
                   <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium truncate">{{ file.name }}</p>
                     <p class="text-xs text-muted-foreground">{{ file.size }}</p>
                   </div>
                   <a 
                     :href="file.download_url"
-                    class="ml-2 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex-shrink-0"
+                    class="ml-2 px-3 py-1.5 text-xs font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors flex-shrink-0 inline-flex items-center gap-1"
                   >
-                    ⬇️ Download
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Download
                   </a>
                 </div>
               </div>

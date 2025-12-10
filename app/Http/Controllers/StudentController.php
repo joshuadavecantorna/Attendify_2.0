@@ -289,7 +289,7 @@ class StudentController extends Controller
                             'size' => $this->formatFileSize($file->file_size),
                             'description' => $file->description,
                             'created_at' => $file->created_at,
-                            'download_url' => route('teacher.files.download', $file->id)
+                            'download_url' => route('student.files.download', $file->id)
                         ];
                     });
 
@@ -547,14 +547,30 @@ class StudentController extends Controller
             $attachmentPath = $request->file('attachment')->store('excuse-requests', 'public');
         }
 
-        ExcuseRequest::create([
-            'student_id' => $student->id,
-            'attendance_session_id' => $validated['attendance_session_id'],
-            'reason' => $validated['reason'],
-            'attachment_path' => $attachmentPath,
-            'status' => 'pending',
-            'submitted_at' => now(),
-        ]);
+        // Fix PostgreSQL sequence if needed
+        try {
+            ExcuseRequest::create([
+                'student_id' => $student->id,
+                'attendance_session_id' => $validated['attendance_session_id'],
+                'reason' => $validated['reason'],
+                'attachment_path' => $attachmentPath,
+                'status' => 'pending',
+                'submitted_at' => now(),
+            ]);
+        } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+            // Reset sequence and retry
+            $this->fixPostgresSequence('excuse_requests', 'id');
+            
+            // Retry the insert
+            ExcuseRequest::create([
+                'student_id' => $student->id,
+                'attendance_session_id' => $validated['attendance_session_id'],
+                'reason' => $validated['reason'],
+                'attachment_path' => $attachmentPath,
+                'status' => 'pending',
+                'submitted_at' => now(),
+            ]);
+        }
 
         return redirect()->route('student.excuse-requests')->with('success', 'Excuse request submitted successfully.');
     }
@@ -1026,6 +1042,73 @@ class StudentController extends Controller
     }
 
     /**
+     * Download a class file (student access)
+     */
+    public function downloadClassFile($fileId)
+    {
+        try {
+            $student = $this->getCurrentStudent();
+
+            // Verify student is enrolled in a class that has this file
+            $file = \App\Models\ClassFile::where('id', $fileId)
+                ->where('visibility', 'public')
+                ->whereRaw('COALESCE(is_active, true) = true')
+                ->whereHas('class.students', function($query) use ($student) {
+                    $query->where('students.id', $student->id);
+                })
+                ->firstOrFail();
+
+            $filePath = storage_path('app/public/' . $file->file_path);
+            
+            if (!file_exists($filePath)) {
+                abort(404, 'File not found');
+            }
+
+            return response()->download($filePath, $file->original_name ?? $file->file_name);
+        } catch (\Exception $e) {
+            Log::error('Error downloading class file', [
+                'file_id' => $fileId,
+                'error' => $e->getMessage()
+            ]);
+            abort(404, 'File not found or access denied');
+        }
+    }
+
+    /**
+     * Download excuse request attachment (student access - own requests only)
+     */
+    public function downloadExcuseAttachment($requestId)
+    {
+        try {
+            $student = $this->getCurrentStudent();
+
+            $excuseRequest = \App\Models\ExcuseRequest::where('id', $requestId)
+                ->where('student_id', $student->id)
+                ->whereNotNull('attachment_path')
+                ->firstOrFail();
+
+            $filePath = storage_path('app/public/' . $excuseRequest->attachment_path);
+
+            if (!file_exists($filePath)) {
+                Log::error('Excuse attachment file not found', [
+                    'request_id' => $requestId,
+                    'file_path' => $filePath,
+                    'attachment_path' => $excuseRequest->attachment_path
+                ]);
+                abort(404, 'Attachment not found');
+            }
+
+            return response()->download($filePath, basename($excuseRequest->attachment_path));
+        } catch (\Exception $e) {
+            Log::error('Error downloading excuse attachment', [
+                'request_id' => $requestId,
+                'error' => $e->getMessage()
+            ]);
+            abort(404, 'Attachment not found or access denied');
+        }
+    }
+
+    /**
      * Format schedule display string
      */
     private function formatScheduleDisplay($time, $days)
@@ -1060,5 +1143,23 @@ class StudentController extends Controller
         $bytes /= (1 << (10 * $pow));
 
         return round($bytes, 2) . ' ' . $units[$pow];
+    }
+
+    /**
+     * Fix PostgreSQL sequence for a table
+     */
+    private function fixPostgresSequence($tableName, $columnName = 'id')
+    {
+        try {
+            $sequenceName = DB::select("SELECT pg_get_serial_sequence('$tableName', '$columnName') as sequence")[0]->sequence;
+            if ($sequenceName) {
+                DB::statement("SELECT setval('$sequenceName', (SELECT COALESCE(MAX($columnName), 0) FROM $tableName) + 1, false)");
+                Log::info("Fixed PostgreSQL sequence for $tableName.$columnName");
+            }
+        } catch (\Exception $e) {
+            Log::error("Failed to fix PostgreSQL sequence for $tableName.$columnName", [
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 }

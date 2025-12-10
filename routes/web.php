@@ -102,6 +102,10 @@ Route::middleware(['auth', 'verified'])->prefix('student')->name('student.')->gr
     Route::post('/excuse-requests', [App\Http\Controllers\StudentController::class, 'submitExcuseRequest'])->name('excuse-requests.submit');
     Route::post('/quick-checkin', [App\Http\Controllers\StudentController::class, 'quickCheckIn'])->name('quick-checkin');
     Route::post('/self-checkin', [App\Http\Controllers\StudentController::class, 'selfCheckIn'])->name('self-checkin');
+    
+    // File downloads
+    Route::get('/files/download/{fileId}', [App\Http\Controllers\StudentController::class, 'downloadClassFile'])->name('files.download');
+    Route::get('/excuse-requests/{requestId}/download-attachment', [App\Http\Controllers\StudentController::class, 'downloadExcuseAttachment'])->name('excuse-requests.download-attachment');
 });
 
 // Admin Routes (for non-teacher users)

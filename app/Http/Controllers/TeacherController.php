@@ -3902,7 +3902,7 @@ class TeacherController extends Controller
             $excuseRequest->update([
                 'status' => 'approved',
                 'reviewed_at' => now(),
-                'reviewed_by' => $teacher->id,
+                'reviewed_by' => $teacher->user_id,
                 'review_notes' => $validated['review_notes'] ?? null,
             ]);
 
@@ -3993,7 +3993,7 @@ class TeacherController extends Controller
             $excuseRequest->update([
                 'status' => 'rejected',
                 'reviewed_at' => now(),
-                'reviewed_by' => $teacher->id,
+                'reviewed_by' => $teacher->user_id,
                 'review_notes' => $validated['review_notes'],
             ]);
 
