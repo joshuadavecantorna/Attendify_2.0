@@ -95,6 +95,40 @@ const getStatusColor = (status: string) => {
   }
 };
 
+const getStatusLabel = (status: string) => {
+  switch (status) {
+    case 'present':
+      return 'On time';
+    case 'late':
+      return 'Late';
+    case 'excused':
+      return 'Excused';
+    case 'absent':
+      return 'Absent';
+    default:
+      return status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unknown';
+  }
+};
+
+const formatTime = (value?: string, date?: string) => {
+  if (!value) return '—';
+
+  const normalized = value.includes('T') ? value : value.replace(' ', 'T');
+  const candidate = date && value.length <= 8 ? `${date}T${value}` : normalized;
+  const parsed = new Date(candidate);
+
+  if (Number.isNaN(parsed.getTime())) return value;
+
+  return new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    minute: '2-digit'
+  }).format(parsed);
+};
+
+const getSessionDate = (record: any) => record.formatted_date || record.session_date;
+const getStartTime = (record: any) => record.formatted_time || formatTime(record.start_time, record.session_date);
+const getMarkedTime = (record: any) => record.formatted_marked_at || formatTime(record.marked_at, record.session_date);
+
 const clearFilters = () => {
   filters.value = {
     class: '',
@@ -262,20 +296,23 @@ const clearFilters = () => {
                   
                   <div class="min-w-0 flex-1">
                     <div class="font-medium text-foreground truncate">{{ record.class_name }}</div>
-                    <div class="text-sm text-muted-foreground">Session {{ record.session_date }}</div>
+                    <div class="text-sm text-muted-foreground">Session {{ getSessionDate(record) }}</div>
+                    <div v-if="record.marked_at" class="text-xs text-muted-foreground">Marked at {{ getMarkedTime(record) }}</div>
+                    <div class="text-xs text-muted-foreground">Status: {{ getStatusLabel(record.status) }}</div>
                   </div>
                 </div>
 
                 <div class="flex items-center justify-between sm:justify-end space-x-4">
                   <!-- Date -->
                   <div class="text-left sm:text-right">
-                    <div class="text-sm font-medium text-foreground">{{ record.session_date }}</div>
-                    <div class="text-xs text-muted-foreground">Start: {{ record.start_time?.slice(11,16) || '—' }}</div>
+                    <div class="text-sm font-medium text-foreground">{{ getSessionDate(record) }}</div>
+                    <div class="text-xs text-muted-foreground">Start: {{ getStartTime(record) }}</div>
+                    <div class="text-xs text-muted-foreground">Marked: {{ getMarkedTime(record) }}</div>
                   </div>
 
                   <!-- Status Badge -->
                   <Badge :variant="getStatusColor(record.status)" class="flex-shrink-0">
-                    {{ record.status.charAt(0).toUpperCase() + record.status.slice(1) }}
+                    {{ record.status_display || record.status.charAt(0).toUpperCase() + record.status.slice(1) }}
                   </Badge>
                 </div>
               </div>
