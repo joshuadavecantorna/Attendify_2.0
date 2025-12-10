@@ -205,10 +205,13 @@ const toggleStudent = (id: number) => {
                 <div v-if="expandedStudentId === student.id" class="mt-2 space-y-2 text-sm">
                   <div class="text-muted-foreground">Class: {{ student.class_name }}</div>
                   <div class="flex flex-wrap gap-2">
-                    <span>Sessions: {{ student.total_sessions }}</span>
-                    <span class="text-green-600">Present: {{ student.present_count }}</span>
-                    <span class="text-muted-foreground">Rate: {{ student.attendance_rate }}%</span>
-                  </div>
+                      <span>Sessions: {{ student.total_sessions }}</span>
+                      <span class="text-green-600">Present: {{ student.present_count }}</span>
+                      <span class="text-amber-600">Late: {{ student.late_count }}</span>
+                      <span class="text-blue-600">Excused: {{ student.excused_count }}</span>
+                      <span class="text-red-600">Absent: {{ student.absent_count }}</span>
+                      <span class="text-muted-foreground">Rate: {{ student.attendance_rate }}%</span>
+                    </div>
                 </div>
               </transition>
             </div>
@@ -222,7 +225,10 @@ const toggleStudent = (id: number) => {
                 <TableHead>Student ID</TableHead>
                 <TableHead>Class</TableHead>
                 <TableHead>Sessions</TableHead>
-                <TableHead>Present</TableHead>
+                  <TableHead>Present (On Time)</TableHead>
+                  <TableHead>Late</TableHead>
+                  <TableHead>Excused</TableHead>
+                  <TableHead>Absent</TableHead>
                 <TableHead>Attendance Rate</TableHead>
                 <TableHead>Performance</TableHead>
               </TableRow>
@@ -243,6 +249,15 @@ const toggleStudent = (id: number) => {
                 <TableCell>
                   <span class="text-green-600 font-medium">{{ student.present_count }}</span>
                 </TableCell>
+                  <TableCell>
+                    <span class="text-amber-600 font-medium">{{ student.late_count }}</span>
+                  </TableCell>
+                  <TableCell>
+                    <span class="text-blue-600 font-medium">{{ student.excused_count }}</span>
+                  </TableCell>
+                  <TableCell>
+                    <span class="text-red-600 font-medium">{{ student.absent_count }}</span>
+                  </TableCell>
                 <TableCell>
                   <span class="font-medium">{{ student.attendance_rate }}%</span>
                 </TableCell>

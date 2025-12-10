@@ -788,6 +788,20 @@ class TeacherController extends Controller
         if ($seq && $seq->seq) {
             DB::statement("SELECT setval('" . $seq->seq . "', (SELECT COALESCE(MAX(id), 0) FROM attendance_records))");
         }
+
+        $startAt = $session->start_time
+            ? Carbon::parse($session->session_date . ' ' . $session->start_time)
+            : now();
+        $minutesSinceStart = $startAt->diffInMinutes(now(), false);
+
+        if ($request->status === 'excused') {
+            $statusToStore = 'excused';
+        } elseif ($request->status === 'absent') {
+            $statusToStore = 'absent';
+        } else {
+            $statusToStore = $minutesSinceStart >= 15 ? 'late' : 'present';
+        }
+
         try {
             $record = AttendanceRecord::updateOrCreate(
                 [
@@ -795,10 +809,10 @@ class TeacherController extends Controller
                     'student_id' => $student->id // Use the database ID for attendance records
                 ],
                 [
-                    'status' => $request->status,
+                    'status' => $statusToStore,
                     'method' => $request->get('method'),
                     'notes' => $request->notes,
-                    'marked_at' => in_array($request->status, ['present', 'late']) ? now() : null
+                    'marked_at' => in_array($statusToStore, ['present', 'late']) ? now() : null
                 ]
             );
         } catch (\Throwable $e) {
@@ -813,10 +827,10 @@ class TeacherController extends Controller
                     'student_id' => $student->id
                 ],
                 [
-                    'status' => $request->status,
+                    'status' => $statusToStore,
                     'method' => $request->get('method'),
                     'notes' => $request->notes,
-                    'marked_at' => in_array($request->status, ['present', 'late']) ? now() : null
+                    'marked_at' => in_array($statusToStore, ['present', 'late']) ? now() : null
                 ]
             );
         }
@@ -939,6 +953,12 @@ class TeacherController extends Controller
                 ], 403);
             }
 
+            $startAt = $session->start_time
+                ? Carbon::parse($session->session_date . ' ' . $session->start_time)
+                : now();
+            $minutesSinceStart = $startAt->diffInMinutes(now(), false);
+            $statusToStore = $minutesSinceStart >= 15 ? 'late' : 'present';
+
             // Check if already marked
             $existingRecord = AttendanceRecord::where('attendance_session_id', $sessionId)
                                             ->where('student_id', $student->id)
@@ -964,7 +984,7 @@ class TeacherController extends Controller
                     $record = AttendanceRecord::create([
                         'attendance_session_id' => $sessionId,
                         'student_id' => $student->id,
-                        'status' => 'present',
+                        'status' => $statusToStore,
                         'method' => 'qr_scan',
                         'marked_at' => now()
                     ]);
@@ -976,7 +996,7 @@ class TeacherController extends Controller
                     $record = AttendanceRecord::create([
                         'attendance_session_id' => $sessionId,
                         'student_id' => $student->id,
-                        'status' => 'present',
+                        'status' => $statusToStore,
                         'method' => 'qr_scan',
                         'marked_at' => now()
                     ]);
@@ -996,7 +1016,7 @@ class TeacherController extends Controller
                 'success' => true,
                 'message' => 'Attendance marked successfully',
                 'student' => $student,
-                'status' => 'present',
+                'status' => $statusToStore,
                 'record' => $record
             ]);
 
@@ -1057,6 +1077,45 @@ class TeacherController extends Controller
             'status' => 'completed',
             'end_time' => now()
         ]);
+
+        $enrolledStudents = DB::table('class_student')
+            ->where('class_model_id', $session->class_id)
+            ->where('status', 'enrolled')
+            ->pluck('student_id');
+
+        $recordedStudents = AttendanceRecord::where('attendance_session_id', $sessionId)
+            ->pluck('student_id');
+
+        $studentsWithoutRecords = $enrolledStudents->diff($recordedStudents);
+
+        if ($studentsWithoutRecords->isNotEmpty()) {
+            $seq = DB::selectOne("SELECT pg_get_serial_sequence('attendance_records', 'id') AS seq");
+            if ($seq && $seq->seq) {
+                DB::statement("SELECT setval('" . $seq->seq . "', (SELECT COALESCE(MAX(id), 0) FROM attendance_records))");
+            }
+
+            foreach ($studentsWithoutRecords as $studentId) {
+                AttendanceRecord::create([
+                    'attendance_session_id' => $sessionId,
+                    'student_id' => $studentId,
+                    'status' => 'absent',
+                    'marked_at' => now(),
+                    'marked_by' => 'system',
+                    'notes' => 'Automatically marked absent when session ended'
+                ]);
+            }
+        }
+
+        if (method_exists($session, 'updateCounts')) {
+            try {
+                $session->updateCounts();
+            } catch (\Throwable $e) {
+                Log::warning('Attendance count update failed on session end', [
+                    'session_id' => $sessionId,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
 
         // Return an Inertia redirect response
         return redirect()->route('teacher.attendance')
@@ -2946,9 +3005,63 @@ class TeacherController extends Controller
                                 ->orderBy('students.name')
                                 ->get();
 
+        $sessionCountsByClass = DB::table('attendance_sessions')
+            ->where('teacher_id', $teacher->id)
+            ->select('class_id', DB::raw('COUNT(*) as total_sessions'))
+            ->groupBy('class_id')
+            ->pluck('total_sessions', 'class_id');
+
+        $attendanceAggregates = DB::table('attendance_records')
+            ->join('attendance_sessions', 'attendance_records.attendance_session_id', '=', 'attendance_sessions.id')
+            ->where('attendance_sessions.teacher_id', $teacher->id)
+            ->select(
+                'attendance_records.student_id',
+                'attendance_sessions.class_id',
+                DB::raw("SUM(CASE WHEN attendance_records.status = 'present' THEN 1 ELSE 0 END) as present_count"),
+                DB::raw("SUM(CASE WHEN attendance_records.status = 'late' THEN 1 ELSE 0 END) as late_count"),
+                DB::raw("SUM(CASE WHEN attendance_records.status = 'excused' THEN 1 ELSE 0 END) as excused_count"),
+                DB::raw("SUM(CASE WHEN attendance_records.status = 'absent' THEN 1 ELSE 0 END) as absent_count")
+            )
+            ->groupBy('attendance_records.student_id', 'attendance_sessions.class_id')
+            ->get()
+            ->keyBy(function ($row) {
+                return $row->student_id . '-' . $row->class_id;
+            });
+
         // Enhanced student data with comprehensive analytics
-        $students = collect($rawStudents)->map(function ($student) use ($teacher) {
-            // Simplified version for debugging - skip complex attendance calculations
+        $students = collect($rawStudents)->map(function ($student) use ($sessionCountsByClass, $attendanceAggregates) {
+            $key = $student->id . '-' . $student->class_id;
+            $stats = $attendanceAggregates->get($key);
+
+            $present = $stats->present_count ?? 0;
+            $late = $stats->late_count ?? 0;
+            $excused = $stats->excused_count ?? 0;
+            $absent = $stats->absent_count ?? 0;
+
+            $totalSessions = $sessionCountsByClass[$student->class_id] ?? 0;
+
+            $computedRate = $totalSessions > 0
+                ? round((($present + $late + $excused) / $totalSessions) * 100)
+                : 0;
+
+            // If there are no absences and sessions exist, force 100%
+            if ($totalSessions > 0 && $absent === 0) {
+                $computedRate = 100;
+            }
+
+            $performance = 'fair';
+            if ($computedRate >= 90) {
+                $performance = 'excellent';
+            } elseif ($computedRate >= 75) {
+                $performance = 'good';
+            } elseif ($computedRate >= 60) {
+                $performance = 'fair';
+            } else {
+                $performance = 'poor';
+            }
+
+            $needsAttention = $computedRate < 75;
+
             return [
                 'id' => $student->id,
                 'student_id' => $student->student_id,
@@ -2961,17 +3074,17 @@ class TeacherController extends Controller
                 'class_id' => $student->class_id,
                 'class_name' => $student->class_name,
                 'enrolled_at' => $student->enrolled_at,
-                'attendance_rate' => 85.0, // Temporary static value
-                'recent_attendance_rate' => 82.0,
-                'total_sessions' => 10,
-                'present_count' => 8,
-                'absent_count' => 2,
-                'late_count' => 0,
-                'excused_count' => 0,
-                'recent_pattern' => ['present', 'present', 'absent'],
+                'attendance_rate' => $computedRate,
+                'recent_attendance_rate' => $computedRate,
+                'total_sessions' => $totalSessions,
+                'present_count' => $present,
+                'absent_count' => $absent,
+                'late_count' => $late,
+                'excused_count' => $excused,
+                'recent_pattern' => [],
                 'trend' => 'stable',
-                'performance' => 'good',
-                'needs_attention' => false,
+                'performance' => $performance,
+                'needs_attention' => $needsAttention,
             ];
         });
         
