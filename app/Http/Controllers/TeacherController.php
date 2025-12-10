@@ -789,9 +789,22 @@ class TeacherController extends Controller
             DB::statement("SELECT setval('" . $seq->seq . "', (SELECT COALESCE(MAX(id), 0) FROM attendance_records))");
         }
 
-        $startAt = $session->start_time
-            ? Carbon::parse($session->session_date . ' ' . $session->start_time)
-            : now();
+        $startAt = now();
+        if ($session->start_time) {
+            try {
+                // Try to parse as full datetime first, then fall back to combining with session_date
+                if (strpos($session->start_time, ':') === false || strlen($session->start_time) > 10) {
+                    // Already a full datetime or invalid format
+                    $startAt = Carbon::parse($session->start_time);
+                } else {
+                    // Just time portion, combine with session_date
+                    $startAt = Carbon::parse($session->session_date . ' ' . $session->start_time);
+                }
+            } catch (\Exception $e) {
+                // Fallback to now if parsing fails
+                $startAt = now();
+            }
+        }
         $minutesSinceStart = $startAt->diffInMinutes(now(), false);
 
         if ($request->status === 'excused') {
@@ -953,9 +966,22 @@ class TeacherController extends Controller
                 ], 403);
             }
 
-            $startAt = $session->start_time
-                ? Carbon::parse($session->session_date . ' ' . $session->start_time)
-                : now();
+            $startAt = now();
+            if ($session->start_time) {
+                try {
+                    // Try to parse as full datetime first, then fall back to combining with session_date
+                    if (strpos($session->start_time, ':') === false || strlen($session->start_time) > 10) {
+                        // Already a full datetime or invalid format
+                        $startAt = Carbon::parse($session->start_time);
+                    } else {
+                        // Just time portion, combine with session_date
+                        $startAt = Carbon::parse($session->session_date . ' ' . $session->start_time);
+                    }
+                } catch (\Exception $e) {
+                    // Fallback to now if parsing fails
+                    $startAt = now();
+                }
+            }
             $minutesSinceStart = $startAt->diffInMinutes(now(), false);
             $statusToStore = $minutesSinceStart >= 15 ? 'late' : 'present';
 
@@ -3873,7 +3899,12 @@ class TeacherController extends Controller
             DB::beginTransaction();
 
             // Mark the excuse as approved
-            $excuseRequest->approve($teacher, $validated['review_notes'] ?? null);
+            $excuseRequest->update([
+                'status' => 'approved',
+                'reviewed_at' => now(),
+                'reviewed_by' => $teacher->id,
+                'review_notes' => $validated['review_notes'] ?? null,
+            ]);
 
             // Also set the attendance record for this session/student to excused
             if ($excuseRequest->attendance_session_id && $excuseRequest->student_id) {
@@ -3958,7 +3989,13 @@ class TeacherController extends Controller
 
             DB::beginTransaction();
 
-            $excuseRequest->reject($teacher, $validated['review_notes']);
+            // Update the excuse request status
+            $excuseRequest->update([
+                'status' => 'rejected',
+                'reviewed_at' => now(),
+                'reviewed_by' => $teacher->id,
+                'review_notes' => $validated['review_notes'],
+            ]);
 
             // If there is an attendance record marked excused/present for this session/student, keep it absent on rejection
             if ($excuseRequest->attendance_session_id && $excuseRequest->student_id) {
