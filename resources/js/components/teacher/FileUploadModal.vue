@@ -368,8 +368,8 @@ const uploadFile = async () => {
           reject(new Error('Network error during upload'));
         });
 
-        // Backend endpoint is /files/upload (no /teacher prefix)
-        xhr.open('POST', '/files/upload');
+        // Backend endpoint is /teacher/files/upload
+        xhr.open('POST', '/teacher/files/upload');
         xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken || '');
         xhr.setRequestHeader('Accept', 'application/json');
         xhr.send(formData);
