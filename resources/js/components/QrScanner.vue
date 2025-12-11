@@ -163,15 +163,37 @@ const saveToHistory = (result: ScanResult) => {
 // Watch for show prop changes to control camera
 watch(() => props.show, (newVal) => {
   if (newVal && activeTab.value === 'camera' && isSecureContext.value) {
-    camera.value = 'auto';
-    error.value = '';
-    cameraStatus.value = 'loading';
-    isScanning.value = true;
+    // Force camera off first, then turn it on after a short delay
+    // This helps reset the camera stream on mobile devices
+    camera.value = 'off';
+    setTimeout(() => {
+      camera.value = 'auto';
+      error.value = '';
+      cameraStatus.value = 'loading';
+      isScanning.value = true;
+    }, 100);
   } else {
     camera.value = 'off';
     isScanning.value = false;
   }
 }, { immediate: true });
+
+// Watch for active tab changes to control camera
+watch(() => activeTab.value, (newTab) => {
+  if (newTab === 'camera' && props.show && isSecureContext.value) {
+    // Force camera restart when switching to camera tab
+    camera.value = 'off';
+    setTimeout(() => {
+      camera.value = 'auto';
+      error.value = '';
+      cameraStatus.value = 'loading';
+      isScanning.value = true;
+    }, 100);
+  } else {
+    camera.value = 'off';
+    isScanning.value = false;
+  }
+});
 
 // Camera initialized successfully
 const onCameraOn = () => {
@@ -191,15 +213,26 @@ const onError = (err: any) => {
   console.error('Camera error details:', err);
   cameraStatus.value = 'error';
   
-  if (err?.name === 'NotAllowedError') {
-    error.value = 'Camera access denied. Please allow camera permissions.';
+  if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
+    error.value = 'Camera access denied. Please allow camera permissions in your browser settings and reload the page.';
   } else if (err?.name === 'NotFoundError') {
     error.value = 'No camera found on this device.';
   } else if (err?.name === 'NotSupportedError' || err?.message?.includes('secure context')) {
     error.value = 'Camera not supported in HTTP context. Switch to manual mode.';
     cameraStatus.value = 'unsupported';
+  } else if (err?.name === 'NotReadableError' || err?.name === 'TrackStartError') {
+    error.value = 'Camera is already in use by another application. Please close other apps using the camera and try again.';
+  } else if (err?.name === 'OverconstrainedError') {
+    error.value = 'Camera constraints not supported. Trying to restart...';
+    // Try to restart with default settings
+    setTimeout(() => {
+      camera.value = 'off';
+      setTimeout(() => {
+        camera.value = 'auto';
+      }, 200);
+    }, 1000);
   } else {
-    error.value = `Camera error: ${err?.message || 'Unknown error'}`;
+    error.value = `Camera error: ${err?.message || 'Unknown error'}. Please try manual mode.`;
   }
 };
 
@@ -816,12 +849,15 @@ const toggleScanning = () => {
       pendingScans.value = []; // Clear pending scans
     }
   } else {
-    // Start scanning
+    // Start scanning - force camera restart
     if (activeTab.value === 'camera' && isSecureContext.value) {
-      camera.value = 'auto';
-      error.value = '';
-      cameraStatus.value = 'loading';
-      isScanning.value = true;
+      camera.value = 'off';
+      setTimeout(() => {
+        camera.value = 'auto';
+        error.value = '';
+        cameraStatus.value = 'loading';
+        isScanning.value = true;
+      }, 100);
     }
   }
 };
@@ -833,9 +869,9 @@ const switchToCamera = () => {
     return;
   }
   activeTab.value = 'camera';
-  camera.value = 'auto';
   error.value = '';
   formErrors.value = {};
+  // Camera will be automatically started by the activeTab watcher
 };
 
 const switchToManual = () => {
