@@ -429,11 +429,11 @@ class N8NController extends Controller
             // Get all teachers with notifications enabled
             $teachers = \App\Models\Teacher::whereNotNull('telegram_chat_id')
                 ->where('notification_enabled', true)
-                ->get(['teacher_id', 'name', 'telegram_chat_id', 'telegram_username'])
+                ->get(['teacher_id', 'first_name', 'last_name', 'telegram_chat_id', 'telegram_username'])
                 ->map(function($teacher) {
                     return [
                         'id' => $teacher->teacher_id,
-                        'name' => $teacher->name,
+                        'name' => trim($teacher->first_name . ' ' . $teacher->last_name),
                         'type' => 'teacher',
                         'telegram_chat_id' => $teacher->telegram_chat_id,
                         'telegram_username' => $teacher->telegram_username,
