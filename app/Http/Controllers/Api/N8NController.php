@@ -463,4 +463,129 @@ class N8NController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get today's schedule by telegram_chat_id
+     * Used by /today command and daily scheduler
+     */
+    public function getTodayScheduleByChat(Request $request)
+    {
+        try {
+            $telegram_chat_id = $request->telegram_chat_id;
+
+            if (!$telegram_chat_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'telegram_chat_id is required'
+                ], 400);
+            }
+
+            // Check if student
+            $student = Student::where('telegram_chat_id', $telegram_chat_id)->first();
+            
+            if ($student) {
+                // Get today's schedule for student
+                $today = Carbon::today();
+                $dayOfWeek = $today->format('l');
+
+                $classes = DB::table('class_student')
+                    ->join('class_models', 'class_models.id', '=', 'class_student.class_model_id')
+                    ->join('teachers', 'teachers.id', '=', 'class_models.teacher_id')
+                    ->where('class_student.student_id', $student->id)
+                    ->where('class_student.status', 'enrolled')
+                    ->where('class_models.day_of_week', $dayOfWeek)
+                    ->select(
+                        'class_models.class_name',
+                        'class_models.class_code',
+                        'class_models.start_time',
+                        'class_models.end_time',
+                        'class_models.location',
+                        'teachers.first_name as teacher_first_name',
+                        'teachers.last_name as teacher_last_name'
+                    )
+                    ->orderBy('class_models.start_time')
+                    ->get()
+                    ->map(function($class) {
+                        return [
+                            'class_name' => $class->class_name,
+                            'class_code' => $class->class_code,
+                            'time' => Carbon::parse($class->start_time)->format('g:i A') . ' - ' . Carbon::parse($class->end_time)->format('g:i A'),
+                            'location' => $class->location,
+                            'teacher_name' => trim($class->teacher_first_name . ' ' . $class->teacher_last_name)
+                        ];
+                    });
+
+                return response()->json([
+                    'success' => true,
+                    'user' => [
+                        'id' => $student->student_id,
+                        'name' => $student->name,
+                        'type' => 'student'
+                    ],
+                    'date' => $today->format('l, F j, Y'),
+                    'total_classes' => $classes->count(),
+                    'classes' => $classes
+                ]);
+            }
+
+            // Check if teacher
+            $teacher = \App\Models\Teacher::where('telegram_chat_id', $telegram_chat_id)->first();
+            
+            if ($teacher) {
+                // Get today's schedule for teacher
+                $today = Carbon::today();
+                $dayOfWeek = $today->format('l');
+
+                $classes = ClassModel::where('teacher_id', $teacher->id)
+                    ->where('day_of_week', $dayOfWeek)
+                    ->orderBy('start_time')
+                    ->get()
+                    ->map(function($class) {
+                        $studentCount = DB::table('class_student')
+                            ->where('class_model_id', $class->id)
+                            ->where('status', 'enrolled')
+                            ->count();
+
+                        return [
+                            'class_name' => $class->class_name,
+                            'class_code' => $class->class_code,
+                            'time' => Carbon::parse($class->start_time)->format('g:i A') . ' - ' . Carbon::parse($class->end_time)->format('g:i A'),
+                            'location' => $class->location,
+                            'student_count' => $studentCount
+                        ];
+                    });
+
+                return response()->json([
+                    'success' => true,
+                    'user' => [
+                        'id' => $teacher->teacher_id,
+                        'name' => trim($teacher->first_name . ' ' . $teacher->last_name),
+                        'type' => 'teacher'
+                    ],
+                    'date' => $today->format('l, F j, Y'),
+                    'total_classes' => $classes->count(),
+                    'classes' => $classes
+                ]);
+            }
+
+            // User not found
+            return response()->json([
+                'success' => false,
+                'message' => 'User not registered. Please send /start to register first.'
+            ], 404);
+
+        } catch (\Exception $e) {
+            Log::error('Error getting schedule by chat ID', [
+                'telegram_chat_id' => $request->telegram_chat_id ?? null,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error retrieving schedule',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
