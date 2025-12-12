@@ -310,6 +310,85 @@ class N8NController extends Controller
     }
 
     /**
+     * Get all registered users with their roles
+     * For N8N automation
+     */
+    public function getAllUsers()
+    {
+        try {
+            $users = DB::table('users')
+                ->select([
+                    'id',
+                    'name',
+                    'email',
+                    'role',
+                    'created_at',
+                    'updated_at'
+                ])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Get additional details for each role
+            $usersWithDetails = $users->map(function($user) {
+                $userData = [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'created_at' => $user->created_at,
+                    'updated_at' => $user->updated_at,
+                ];
+
+                // Add role-specific details
+                if ($user->role === 'student') {
+                    $student = DB::table('students')
+                        ->where('user_id', $user->id)
+                        ->first();
+                    
+                    if ($student) {
+                        $userData['student_id'] = $student->id;
+                        $userData['student_number'] = $student->student_number ?? null;
+                        $userData['telegram_chat_id'] = $student->telegram_chat_id ?? null;
+                        $userData['telegram_username'] = $student->telegram_username ?? null;
+                        $userData['notification_enabled'] = $student->notification_enabled ?? false;
+                        $userData['preferred_language'] = $student->preferred_language ?? 'en';
+                    }
+                } elseif ($user->role === 'teacher') {
+                    $teacher = DB::table('teachers')
+                        ->where('user_id', $user->id)
+                        ->first();
+                    
+                    if ($teacher) {
+                        $userData['teacher_id'] = $teacher->id;
+                        $userData['department'] = $teacher->department ?? null;
+                        $userData['position'] = $teacher->position ?? null;
+                    }
+                }
+
+                return $userData;
+            });
+
+            return response()->json([
+                'success' => true,
+                'total_users' => $users->count(),
+                'timestamp' => now()->toDateTimeString(),
+                'users' => $usersWithDetails
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching all users', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Health check endpoint
      */
     public function healthCheck()
@@ -322,5 +401,66 @@ class N8NController extends Controller
             'timezone' => config('app.timezone'),
             'current_day' => now()->format('l')
         ]);
+    }
+
+    /**
+     * Get all users with notifications enabled for daily 6 AM reminders
+     * Returns students and teachers with telegram_chat_id and notification_enabled
+     */
+    public function getAllUsersForDailyNotifications()
+    {
+        try {
+            $users = [];
+
+            // Get all students with notifications enabled
+            $students = Student::whereNotNull('telegram_chat_id')
+                ->where('notification_enabled', true)
+                ->get(['student_id', 'name', 'telegram_chat_id', 'telegram_username'])
+                ->map(function($student) {
+                    return [
+                        'id' => $student->student_id,
+                        'name' => $student->name,
+                        'type' => 'student',
+                        'telegram_chat_id' => $student->telegram_chat_id,
+                        'telegram_username' => $student->telegram_username,
+                    ];
+                });
+
+            // Get all teachers with notifications enabled
+            $teachers = \App\Models\Teacher::whereNotNull('telegram_chat_id')
+                ->where('notification_enabled', true)
+                ->get(['teacher_id', 'name', 'telegram_chat_id', 'telegram_username'])
+                ->map(function($teacher) {
+                    return [
+                        'id' => $teacher->teacher_id,
+                        'name' => $teacher->name,
+                        'type' => 'teacher',
+                        'telegram_chat_id' => $teacher->telegram_chat_id,
+                        'telegram_username' => $teacher->telegram_username,
+                    ];
+                });
+
+            // Combine both
+            $users = $students->concat($teachers)->values();
+
+            return response()->json([
+                'success' => true,
+                'total_users' => $users->count(),
+                'students_count' => $students->count(),
+                'teachers_count' => $teachers->count(),
+                'users' => $users
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error getting users for daily notifications', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error retrieving users',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -68,8 +68,12 @@ class RetrievalPlanner
                 return $this->retrieveClasses($userContext, $plan);
             
             default:
-                $plan['executed_query'] = null;
-                return ['message' => 'I understand your question, but I need more specific information to help you.'];
+                // For general questions, allow AI to answer without specific data retrieval
+                $plan['executed_query'] = 'general_question';
+                return [
+                    'type' => 'general',
+                    'message' => 'No specific data retrieval needed - answering from general knowledge',
+                ];
         }
     }
 
@@ -94,7 +98,7 @@ class RetrievalPlanner
         if ($role === 'student' && isset($userContext['student_id'])) {
             $studentId = $userContext['student_id'];
             $plan['role_constraints']['student_id'] = $studentId;
-            $query->where('student_id', $studentId);
+            $query->where('attendance_records.student_id', $studentId);
 
         } elseif ($role === 'teacher' && isset($userContext['teacher'])) {
             $teacherUserId = $userContext['teacher']['user_id'] ?? null;
@@ -110,7 +114,7 @@ class RetrievalPlanner
                 ->all();
 
             if (!empty($studentIds)) {
-                $query->whereIn('student_id', $studentIds);
+                $query->whereIn('attendance_records.student_id', $studentIds);
             } else {
                 return ['message' => 'No students found in your classes.'];
             }

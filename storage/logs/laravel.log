@@ -14838,3 +14838,142 @@ LINE 1: ...nce_records\".\"student_id\" = \"students\".\"id\" where \"student_i.
 [2025-12-02 14:39:03] local.INFO: Fetching schedules {"date":"2025-12-02","day_name":"tuesday"} 
 [2025-12-02 14:39:04] local.INFO: Classes found for today {"count":3} 
 [2025-12-02 14:39:05] local.INFO: Processed schedules {"total_students":1} 
+[2025-12-12 15:47:00] local.ERROR: file_put_contents(C:\Herd\Attendify_2.0\resources\js\actions\App\Http\Controllers\Api\N8NController.ts): Failed to open stream: No such file or directory {"exception":"[object] (ErrorException(code: 0): file_put_contents(C:\\Herd\\Attendify_2.0\\resources\\js\\actions\\App\\Http\\Controllers\\Api\\N8NController.ts): Failed to open stream: No such file or directory at C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php:204)
+[stacktrace]
+#0 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'file_put_conten...', 'C:\\\\Herd\\\\Attendi...', 204)
+#1 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->{closure:Illuminate\\Foundation\\Bootstrap\\HandleExceptions::forwardsTo():257}(2, 'file_put_conten...', 'C:\\\\Herd\\\\Attendi...', 204)
+#2 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php(204): file_put_contents('C:\\\\Herd\\\\Attendi...', '/**\\r\\n* @see \\\\Ap...', 0)
+#3 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\wayfinder\\src\\GenerateCommand.php(128): Illuminate\\Filesystem\\Filesystem->put('C:\\\\Herd\\\\Attendi...', '/**\\r\\n* @see \\\\Ap...')
+#4 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\wayfinder\\src\\GenerateCommand.php(82): Laravel\\Wayfinder\\GenerateCommand->writeContent()
+#5 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(36): Laravel\\Wayfinder\\GenerateCommand->handle()
+#6 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Util.php(43): Illuminate\\Container\\BoundMethod::{closure:Illuminate\\Container\\BoundMethod::call():35}()
+#7 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(96): Illuminate\\Container\\Util::unwrapIfClosure(Object(Closure))
+#8 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod(Object(Illuminate\\Foundation\\Application), Array, Object(Closure))
+#9 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(836): Illuminate\\Container\\BoundMethod::call(Object(Illuminate\\Foundation\\Application), Array, Array, NULL)
+#10 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(211): Illuminate\\Container\\Container->call(Array)
+#11 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Command\\Command.php(318): Illuminate\\Console\\Command->execute(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#12 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(180): Symfony\\Component\\Console\\Command\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#13 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Application.php(1110): Illuminate\\Console\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#14 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Application.php(359): Symfony\\Component\\Console\\Application->doRunCommand(Object(Laravel\\Wayfinder\\GenerateCommand), Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#15 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Application.php(194): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#16 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(197): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#17 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#18 C:\\Herd\\Attendify_2.0\\artisan(16): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
+#19 {main}
+"} 
+[2025-12-12 15:47:00] local.ERROR: FilesystemIterator::__construct(C:\Herd\Attendify_2.0\resources\js\actions\App\Http\Controllers\Auth): The system cannot find the file specifi (code: 2) {"exception":"[object] (UnexpectedValueException(code: 0): FilesystemIterator::__construct(C:\\Herd\\Attendify_2.0\\resources\\js\\actions\\App\\Http\\Controllers\\Auth): The system cannot find the file specifi (code: 2) at C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php:738)
+[stacktrace]
+#0 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php(738): FilesystemIterator->__construct('C:\\\\Herd\\\\Attendi...')
+#1 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php(745): Illuminate\\Filesystem\\Filesystem->deleteDirectory('C:\\\\Herd\\\\Attendi...')
+#2 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php(745): Illuminate\\Filesystem\\Filesystem->deleteDirectory('C:\\\\Herd\\\\Attendi...')
+#3 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php(745): Illuminate\\Filesystem\\Filesystem->deleteDirectory('C:\\\\Herd\\\\Attendi...')
+#4 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php(745): Illuminate\\Filesystem\\Filesystem->deleteDirectory('C:\\\\Herd\\\\Attendi...')
+#5 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\wayfinder\\src\\GenerateCommand.php(75): Illuminate\\Filesystem\\Filesystem->deleteDirectory('C:\\\\Herd\\\\Attendi...')
+#6 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(36): Laravel\\Wayfinder\\GenerateCommand->handle()
+#7 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Util.php(43): Illuminate\\Container\\BoundMethod::{closure:Illuminate\\Container\\BoundMethod::call():35}()
+#8 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(96): Illuminate\\Container\\Util::unwrapIfClosure(Object(Closure))
+#9 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod(Object(Illuminate\\Foundation\\Application), Array, Object(Closure))
+#10 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(836): Illuminate\\Container\\BoundMethod::call(Object(Illuminate\\Foundation\\Application), Array, Array, NULL)
+#11 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(211): Illuminate\\Container\\Container->call(Array)
+#12 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Command\\Command.php(318): Illuminate\\Console\\Command->execute(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#13 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(180): Symfony\\Component\\Console\\Command\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#14 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Application.php(1110): Illuminate\\Console\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#15 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Application.php(359): Symfony\\Component\\Console\\Application->doRunCommand(Object(Laravel\\Wayfinder\\GenerateCommand), Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#16 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Application.php(194): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#17 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(197): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#18 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#19 C:\\Herd\\Attendify_2.0\\artisan(16): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
+#20 {main}
+"} 
+[2025-12-12 15:47:00] local.ERROR: file_put_contents(C:\Herd\Attendify_2.0\resources\js\actions\App\Http\Controllers\TelegramWebhookController.ts): Failed to open stream: Permission denied {"exception":"[object] (ErrorException(code: 0): file_put_contents(C:\\Herd\\Attendify_2.0\\resources\\js\\actions\\App\\Http\\Controllers\\TelegramWebhookController.ts): Failed to open stream: Permission denied at C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php:204)
+[stacktrace]
+#0 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'file_put_conten...', 'C:\\\\Herd\\\\Attendi...', 204)
+#1 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->{closure:Illuminate\\Foundation\\Bootstrap\\HandleExceptions::forwardsTo():257}(2, 'file_put_conten...', 'C:\\\\Herd\\\\Attendi...', 204)
+#2 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php(204): file_put_contents('C:\\\\Herd\\\\Attendi...', 'import { queryP...', 0)
+#3 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php(259): Illuminate\\Filesystem\\Filesystem->put('C:\\\\Herd\\\\Attendi...', 'import { queryP...')
+#4 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\wayfinder\\src\\GenerateCommand.php(133): Illuminate\\Filesystem\\Filesystem->prepend('C:\\\\Herd\\\\Attendi...', 'import { queryP...')
+#5 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\wayfinder\\src\\GenerateCommand.php(82): Laravel\\Wayfinder\\GenerateCommand->writeContent()
+#6 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(36): Laravel\\Wayfinder\\GenerateCommand->handle()
+#7 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Util.php(43): Illuminate\\Container\\BoundMethod::{closure:Illuminate\\Container\\BoundMethod::call():35}()
+#8 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(96): Illuminate\\Container\\Util::unwrapIfClosure(Object(Closure))
+#9 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod(Object(Illuminate\\Foundation\\Application), Array, Object(Closure))
+#10 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(836): Illuminate\\Container\\BoundMethod::call(Object(Illuminate\\Foundation\\Application), Array, Array, NULL)
+#11 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(211): Illuminate\\Container\\Container->call(Array)
+#12 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Command\\Command.php(318): Illuminate\\Console\\Command->execute(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#13 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(180): Symfony\\Component\\Console\\Command\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#14 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Application.php(1110): Illuminate\\Console\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#15 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Application.php(359): Symfony\\Component\\Console\\Application->doRunCommand(Object(Laravel\\Wayfinder\\GenerateCommand), Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#16 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Application.php(194): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#17 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(197): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#18 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#19 C:\\Herd\\Attendify_2.0\\artisan(16): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
+#20 {main}
+"} 
+[2025-12-12 15:47:19] local.INFO: Getting current student for user {"user_id":3,"user_email":"s.jdgcantorna@usm.edu.ph","user_name":"JOSHUA DAVE  G. CANTORNA"} 
+[2025-12-12 15:47:52] local.INFO: Getting current student for user {"user_id":3,"user_email":"s.jdgcantorna@usm.edu.ph","user_name":"JOSHUA DAVE  G. CANTORNA"} 
+[2025-12-12 15:48:33] local.ERROR: RetrievalPlanner::planAndExecute error {"intent":"attendance","question":"How many times have I been absent?","error":"SQLSTATE[42702]: Ambiguous column: 7 ERROR:  column reference \"student_id\" is ambiguous
+LINE 1: ...nce_records\".\"student_id\" = \"students\".\"id\" where \"student_i...
+                                                             ^ (Connection: pgsql, SQL: select \"attendance_records\".\"id\", \"attendance_records\".\"student_id\", \"attendance_records\".\"status\", \"attendance_records\".\"marked_at\", \"attendance_records\".\"notes\", \"students\".\"name\" as \"student_name\" from \"attendance_records\" inner join \"students\" on \"attendance_records\".\"student_id\" = \"students\".\"id\" where \"student_id\" = 1 order by \"marked_at\" desc limit 100)"} 
+[2025-12-12 15:50:48] local.ERROR: RetrievalPlanner::planAndExecute error {"intent":"attendance","question":"How many times have I been absent?","error":"SQLSTATE[42702]: Ambiguous column: 7 ERROR:  column reference \"student_id\" is ambiguous
+LINE 1: ...nce_records\".\"student_id\" = \"students\".\"id\" where \"student_i...
+                                                             ^ (Connection: pgsql, SQL: select \"attendance_records\".\"id\", \"attendance_records\".\"student_id\", \"attendance_records\".\"status\", \"attendance_records\".\"marked_at\", \"attendance_records\".\"notes\", \"students\".\"name\" as \"student_name\" from \"attendance_records\" inner join \"students\" on \"attendance_records\".\"student_id\" = \"students\".\"id\" where \"student_id\" = 1 order by \"marked_at\" desc limit 100)"} 
+[2025-12-12 16:06:32] local.INFO: Getting current student for user {"user_id":3,"user_email":"s.jdgcantorna@usm.edu.ph","user_name":"JOSHUA DAVE  G. CANTORNA"} 
+[2025-12-12 16:48:53] local.ERROR: mkdir(): File exists {"exception":"[object] (ErrorException(code: 0): mkdir(): File exists at C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php:655)
+[stacktrace]
+#0 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'mkdir(): File e...', 'C:\\\\Herd\\\\Attendi...', 655)
+#1 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->{closure:Illuminate\\Foundation\\Bootstrap\\HandleExceptions::forwardsTo():257}(2, 'mkdir(): File e...', 'C:\\\\Herd\\\\Attendi...', 655)
+#2 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php(655): mkdir('C:\\\\Herd\\\\Attendi...', 493, true)
+#3 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php(636): Illuminate\\Filesystem\\Filesystem->makeDirectory('C:\\\\Herd\\\\Attendi...', 493, true)
+#4 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\wayfinder\\src\\GenerateCommand.php(127): Illuminate\\Filesystem\\Filesystem->ensureDirectoryExists('C:\\\\Herd\\\\Attendi...')
+#5 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\wayfinder\\src\\GenerateCommand.php(82): Laravel\\Wayfinder\\GenerateCommand->writeContent()
+#6 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(36): Laravel\\Wayfinder\\GenerateCommand->handle()
+#7 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Util.php(43): Illuminate\\Container\\BoundMethod::{closure:Illuminate\\Container\\BoundMethod::call():35}()
+#8 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(96): Illuminate\\Container\\Util::unwrapIfClosure(Object(Closure))
+#9 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod(Object(Illuminate\\Foundation\\Application), Array, Object(Closure))
+#10 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(836): Illuminate\\Container\\BoundMethod::call(Object(Illuminate\\Foundation\\Application), Array, Array, NULL)
+#11 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(211): Illuminate\\Container\\Container->call(Array)
+#12 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Command\\Command.php(318): Illuminate\\Console\\Command->execute(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#13 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(180): Symfony\\Component\\Console\\Command\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#14 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Application.php(1110): Illuminate\\Console\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#15 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Application.php(359): Symfony\\Component\\Console\\Application->doRunCommand(Object(Laravel\\Wayfinder\\GenerateCommand), Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#16 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Application.php(194): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#17 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(197): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#18 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#19 C:\\Herd\\Attendify_2.0\\artisan(16): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
+#20 {main}
+"} 
+[2025-12-12 16:48:55] local.INFO: Getting current student for user {"user_id":3,"user_email":"s.jdgcantorna@usm.edu.ph","user_name":"JOSHUA DAVE  G. CANTORNA"} 
+[2025-12-12 16:48:56] local.INFO: Getting current student for user {"user_id":3,"user_email":"s.jdgcantorna@usm.edu.ph","user_name":"JOSHUA DAVE  G. CANTORNA"} 
+[2025-12-12 16:48:58] local.INFO: Getting current student for user {"user_id":3,"user_email":"s.jdgcantorna@usm.edu.ph","user_name":"JOSHUA DAVE  G. CANTORNA"} 
+[2025-12-12 16:50:52] local.INFO: Getting current student for user {"user_id":3,"user_email":"s.jdgcantorna@usm.edu.ph","user_name":"JOSHUA DAVE  G. CANTORNA"} 
+[2025-12-12 16:50:52] local.INFO: Getting current student for user {"user_id":3,"user_email":"s.jdgcantorna@usm.edu.ph","user_name":"JOSHUA DAVE  G. CANTORNA"} 
+[2025-12-12 16:51:34] local.INFO: Getting current student for user {"user_id":3,"user_email":"s.jdgcantorna@usm.edu.ph","user_name":"JOSHUA DAVE  G. CANTORNA"} 
+[2025-12-12 16:51:35] local.INFO: Getting current student for user {"user_id":3,"user_email":"s.jdgcantorna@usm.edu.ph","user_name":"JOSHUA DAVE  G. CANTORNA"} 
+[2025-12-12 16:51:36] local.INFO: Getting current student for user {"user_id":3,"user_email":"s.jdgcantorna@usm.edu.ph","user_name":"JOSHUA DAVE  G. CANTORNA"} 
+[2025-12-12 16:53:26] local.ERROR: mkdir(): File exists {"exception":"[object] (ErrorException(code: 0): mkdir(): File exists at C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php:655)
+[stacktrace]
+#0 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'mkdir(): File e...', 'C:\\\\Herd\\\\Attendi...', 655)
+#1 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->{closure:Illuminate\\Foundation\\Bootstrap\\HandleExceptions::forwardsTo():257}(2, 'mkdir(): File e...', 'C:\\\\Herd\\\\Attendi...', 655)
+#2 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php(655): mkdir('C:\\\\Herd\\\\Attendi...', 493, true)
+#3 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php(636): Illuminate\\Filesystem\\Filesystem->makeDirectory('C:\\\\Herd\\\\Attendi...', 493, true)
+#4 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\wayfinder\\src\\GenerateCommand.php(127): Illuminate\\Filesystem\\Filesystem->ensureDirectoryExists('C:\\\\Herd\\\\Attendi...')
+#5 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\wayfinder\\src\\GenerateCommand.php(82): Laravel\\Wayfinder\\GenerateCommand->writeContent()
+#6 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(36): Laravel\\Wayfinder\\GenerateCommand->handle()
+#7 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Util.php(43): Illuminate\\Container\\BoundMethod::{closure:Illuminate\\Container\\BoundMethod::call():35}()
+#8 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(96): Illuminate\\Container\\Util::unwrapIfClosure(Object(Closure))
+#9 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod(Object(Illuminate\\Foundation\\Application), Array, Object(Closure))
+#10 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(836): Illuminate\\Container\\BoundMethod::call(Object(Illuminate\\Foundation\\Application), Array, Array, NULL)
+#11 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(211): Illuminate\\Container\\Container->call(Array)
+#12 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Command\\Command.php(318): Illuminate\\Console\\Command->execute(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#13 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(180): Symfony\\Component\\Console\\Command\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#14 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Application.php(1110): Illuminate\\Console\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#15 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Application.php(359): Symfony\\Component\\Console\\Application->doRunCommand(Object(Laravel\\Wayfinder\\GenerateCommand), Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#16 C:\\Herd\\Attendify_2.0\\vendor\\symfony\\console\\Application.php(194): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#17 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(197): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#18 C:\\Herd\\Attendify_2.0\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1235): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#19 C:\\Herd\\Attendify_2.0\\artisan(16): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
+#20 {main}
+"} 
+[2025-12-12 16:53:28] local.INFO: Getting current student for user {"user_id":3,"user_email":"s.jdgcantorna@usm.edu.ph","user_name":"JOSHUA DAVE  G. CANTORNA"} 
+[2025-12-12 16:53:29] local.INFO: Getting current student for user {"user_id":3,"user_email":"s.jdgcantorna@usm.edu.ph","user_name":"JOSHUA DAVE  G. CANTORNA"} 
+[2025-12-12 16:53:31] local.INFO: Getting current student for user {"user_id":3,"user_email":"s.jdgcantorna@usm.edu.ph","user_name":"JOSHUA DAVE  G. CANTORNA"} 

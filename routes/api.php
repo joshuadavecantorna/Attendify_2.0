@@ -36,6 +36,9 @@ Route::prefix('n8n')->group(function () {
     // Health check
     Route::get('/health', [N8NController::class, 'healthCheck']);
     
+    // Get all registered users
+    Route::get('/users', [N8NController::class, 'getAllUsers']);
+    
     // Get all students with today's schedule (for 6am automation)
     Route::get('/schedules/today', [N8NController::class, 'getAllTodaySchedules']);
     
@@ -44,6 +47,9 @@ Route::prefix('n8n')->group(function () {
     
     // Update telegram chat ID
     Route::post('/students/telegram/update', [N8NController::class, 'updateTelegramChatId']);
+    
+    // Get all users with notifications enabled (for daily 6 AM scheduler)
+    Route::get('/daily-notifications/users', [N8NController::class, 'getAllUsersForDailyNotifications']);
 });
 
 // AI Chatbot Routes
