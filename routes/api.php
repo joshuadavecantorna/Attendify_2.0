@@ -36,31 +36,20 @@ Route::prefix('n8n')->group(function () {
     // Health check
     Route::get('/health', [N8NController::class, 'healthCheck']);
     
+    // Get all registered users
+    Route::get('/users', [N8NController::class, 'getAllUsers']);
+    
     // Get all students with today's schedule (for 6am automation)
     Route::get('/schedules/today', [N8NController::class, 'getAllTodaySchedules']);
     
     // Get specific student's today schedule
     Route::get('/students/{studentId}/schedule/today', [N8NController::class, 'getStudentTodaySchedule']);
     
-    // Update telegram chat ID (deprecated - use /register instead)
+    // Update telegram chat ID
     Route::post('/students/telegram/update', [N8NController::class, 'updateTelegramChatId']);
     
-    // === NEW TELEGRAM BOT ENDPOINTS ===
-    
-    // Check if user exists by telegram_chat_id (for /start command)
-    Route::get('/check-user', [N8NController::class, 'checkUser']);
-    
-    // Register user with telegram (searches by student_id or teacher_id)
-    Route::post('/register', [N8NController::class, 'registerTelegram']);
-    
-    // Get today's schedule by telegram_chat_id (for /today command)
-    Route::get('/today-schedule', [N8NController::class, 'getTodayScheduleByChat']);
-    
-    // Disable notifications (for /stop command)
-    Route::post('/notifications/disable', [N8NController::class, 'disableNotifications']);
-    
-    // Enable notifications (for /resume command)
-    Route::post('/notifications/enable', [N8NController::class, 'enableNotifications']);
+    // Get all users with notifications enabled (for daily 6 AM scheduler)
+    Route::get('/daily-notifications/users', [N8NController::class, 'getAllUsersForDailyNotifications']);
 });
 
 // AI Chatbot Routes

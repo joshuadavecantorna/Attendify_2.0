@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Student;
-use App\Models\Teacher;
 use App\Models\ClassModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -153,123 +152,9 @@ class N8NController extends Controller
                 }
             }
 
-            Log::info('Processed student schedules', [
+            Log::info('Processed schedules', [
                 'total_students' => count($studentsSchedule)
             ]);
-
-            // ==================================================
-            // FETCH TEACHERS' SCHEDULES
-            // ==================================================
-            $teachersSchedule = [];
-
-            // Get all teachers with Telegram enabled
-            $teachers = Teacher::with('user')
-                ->whereNotNull('telegram_chat_id')
-                ->where('notification_enabled', true)
-                ->where('is_active', true)
-                ->get();
-
-            Log::info('Teachers with notifications enabled', [
-                'count' => $teachers->count()
-            ]);
-
-            foreach ($teachers as $teacher) {
-                // Get classes taught by this teacher that are scheduled today
-                $teacherTodayClasses = ClassModel::where('teacher_id', $teacher->id)
-                    ->where('is_active', true)
-                    ->whereNotNull('schedule_days')
-                    ->whereNotNull('schedule_time')
-                    ->get()
-                    ->filter(function($class) use ($todayName) {
-                        if (is_array($class->schedule_days)) {
-                            $scheduleDays = array_map('strtolower', $class->schedule_days);
-                            return in_array($todayName, $scheduleDays);
-                        }
-                        return false;
-                    });
-
-                if ($teacherTodayClasses->isEmpty()) {
-                    continue; // Skip teachers with no classes today
-                }
-
-                $teacherClasses = [];
-                foreach ($teacherTodayClasses as $class) {
-                    $className = $class->class_name ?? $class->name ?? 'Unnamed Class';
-
-                    // Parse schedule time
-                    $scheduleTime = '00:00';
-                    $scheduleTime24h = '00:00';
-                    if ($class->schedule_time) {
-                        try {
-                            $time = Carbon::parse($class->schedule_time);
-                            $scheduleTime = $time->format('g:i A');
-                            $scheduleTime24h = $time->format('H:i');
-                        } catch (\Exception $e) {
-                            Log::warning('Failed to parse schedule_time', [
-                                'class_id' => $class->id,
-                                'schedule_time' => $class->schedule_time
-                            ]);
-                        }
-                    }
-
-                    // Format schedule days
-                    $scheduleDaysFormatted = '';
-                    if (is_array($class->schedule_days)) {
-                        $scheduleDaysFormatted = implode(', ', array_map('ucfirst', $class->schedule_days));
-                    }
-
-                    // Get student count for this class
-                    $studentCount = DB::table('class_student')
-                        ->where('class_model_id', $class->id)
-                        ->where('status', 'enrolled')
-                        ->count();
-
-                    $teacherClasses[] = [
-                        'class_id' => $class->id,
-                        'time' => $scheduleTime,
-                        'time_24h' => $scheduleTime24h,
-                        'class_name' => $className,
-                        'class_code' => $class->class_code ?? 'N/A',
-                        'schedule_days' => $scheduleDaysFormatted,
-                        'location' => $class->room ?? 'TBA',
-                        'subject' => $class->subject ?? '',
-                        'student_count' => $studentCount,
-                    ];
-                }
-
-                // Sort classes by time
-                usort($teacherClasses, function($a, $b) {
-                    return strcmp($a['time_24h'], $b['time_24h']);
-                });
-
-                $teachersSchedule[] = [
-                    'teacher_id' => $teacher->id,
-                    'teacher_name' => $teacher->user->name ?? $teacher->first_name . ' ' . $teacher->last_name,
-                    'telegram_chat_id' => $teacher->telegram_chat_id,
-                    'telegram_username' => $teacher->telegram_username,
-                    'preferred_language' => $teacher->preferred_language ?? 'en',
-                    'date' => $today->format('l, F j, Y'),
-                    'day_of_week' => $today->format('l'),
-                    'total_classes' => count($teacherClasses),
-                    'first_class_time' => !empty($teacherClasses) ? $teacherClasses[0]['time'] : null,
-                    'last_class_time' => !empty($teacherClasses) ? end($teacherClasses)['time'] : null,
-                    'classes' => $teacherClasses,
-                    'user_type' => 'teacher' // Added to differentiate in n8n
-                ];
-            }
-
-            Log::info('Processed teacher schedules', [
-                'total_teachers' => count($teachersSchedule)
-            ]);
-
-            // Combine students and teachers into one array
-            $allUsersSchedule = array_merge(
-                array_map(function($student) {
-                    $student['user_type'] = 'student';
-                    return $student;
-                }, array_values($studentsSchedule)),
-                $teachersSchedule
-            );
 
             return response()->json([
                 'success' => true,
@@ -277,11 +162,7 @@ class N8NController extends Controller
                 'date_formatted' => $today->format('l, F j, Y'),
                 'day_of_week' => $today->format('l'),
                 'total_students_with_classes' => count($studentsSchedule),
-                'total_teachers_with_classes' => count($teachersSchedule),
-                'total_users' => count($allUsersSchedule),
-                'students' => array_values($studentsSchedule),
-                'teachers' => $teachersSchedule,
-                'all_users' => $allUsersSchedule // Combined array for easy n8n processing
+                'students' => array_values($studentsSchedule)
             ]);
 
         } catch (\Exception $e) {
@@ -429,6 +310,85 @@ class N8NController extends Controller
     }
 
     /**
+     * Get all registered users with their roles
+     * For N8N automation
+     */
+    public function getAllUsers()
+    {
+        try {
+            $users = DB::table('users')
+                ->select([
+                    'id',
+                    'name',
+                    'email',
+                    'role',
+                    'created_at',
+                    'updated_at'
+                ])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Get additional details for each role
+            $usersWithDetails = $users->map(function($user) {
+                $userData = [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'created_at' => $user->created_at,
+                    'updated_at' => $user->updated_at,
+                ];
+
+                // Add role-specific details
+                if ($user->role === 'student') {
+                    $student = DB::table('students')
+                        ->where('user_id', $user->id)
+                        ->first();
+                    
+                    if ($student) {
+                        $userData['student_id'] = $student->id;
+                        $userData['student_number'] = $student->student_number ?? null;
+                        $userData['telegram_chat_id'] = $student->telegram_chat_id ?? null;
+                        $userData['telegram_username'] = $student->telegram_username ?? null;
+                        $userData['notification_enabled'] = $student->notification_enabled ?? false;
+                        $userData['preferred_language'] = $student->preferred_language ?? 'en';
+                    }
+                } elseif ($user->role === 'teacher') {
+                    $teacher = DB::table('teachers')
+                        ->where('user_id', $user->id)
+                        ->first();
+                    
+                    if ($teacher) {
+                        $userData['teacher_id'] = $teacher->id;
+                        $userData['department'] = $teacher->department ?? null;
+                        $userData['position'] = $teacher->position ?? null;
+                    }
+                }
+
+                return $userData;
+            });
+
+            return response()->json([
+                'success' => true,
+                'total_users' => $users->count(),
+                'timestamp' => now()->toDateTimeString(),
+                'users' => $usersWithDetails
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching all users', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Health check endpoint
      */
     public function healthCheck()
@@ -444,463 +404,61 @@ class N8NController extends Controller
     }
 
     /**
-     * Check if user exists by telegram_chat_id
-     * For /start command - check if user is already registered
+     * Get all users with notifications enabled for daily 6 AM reminders
+     * Returns students and teachers with telegram_chat_id and notification_enabled
      */
-    public function checkUser(Request $request)
+    public function getAllUsersForDailyNotifications()
     {
-        $telegramChatId = $request->query('telegram_chat_id');
-
-        if (!$telegramChatId) {
-            return response()->json([
-                'success' => false,
-                'message' => 'telegram_chat_id is required'
-            ], 400);
-        }
-
         try {
-            // Check students first
-            $student = Student::with('user')
-                ->where('telegram_chat_id', $telegramChatId)
-                ->first();
+            $users = [];
 
-            if ($student) {
-                return response()->json([
-                    'success' => true,
-                    'exists' => true,
-                    'user' => [
+            // Get all students with notifications enabled
+            $students = Student::whereNotNull('telegram_chat_id')
+                ->where('notification_enabled', true)
+                ->get(['student_id', 'name', 'telegram_chat_id', 'telegram_username'])
+                ->map(function($student) {
+                    return [
+                        'id' => $student->student_id,
+                        'name' => $student->name,
                         'type' => 'student',
-                        'id' => $student->id,
-                        'student_id' => $student->student_id,
-                        'name' => $student->user->name ?? $student->name ?? 'Student',
-                        'notification_enabled' => $student->notification_enabled ?? false
-                    ]
-                ]);
-            }
+                        'telegram_chat_id' => $student->telegram_chat_id,
+                        'telegram_username' => $student->telegram_username,
+                    ];
+                });
 
-            // Check teachers
-            $teacher = Teacher::with('user')
-                ->where('telegram_chat_id', $telegramChatId)
-                ->first();
-
-            if ($teacher) {
-                return response()->json([
-                    'success' => true,
-                    'exists' => true,
-                    'user' => [
+            // Get all teachers with notifications enabled
+            $teachers = \App\Models\Teacher::whereNotNull('telegram_chat_id')
+                ->where('notification_enabled', true)
+                ->get(['teacher_id', 'name', 'telegram_chat_id', 'telegram_username'])
+                ->map(function($teacher) {
+                    return [
+                        'id' => $teacher->teacher_id,
+                        'name' => $teacher->name,
                         'type' => 'teacher',
-                        'id' => $teacher->id,
-                        'teacher_id' => $teacher->teacher_id,
-                        'name' => $teacher->user->name ?? ($teacher->first_name . ' ' . $teacher->last_name),
-                        'notification_enabled' => $teacher->notification_enabled ?? false
-                    ]
-                ]);
-            }
+                        'telegram_chat_id' => $teacher->telegram_chat_id,
+                        'telegram_username' => $teacher->telegram_username,
+                    ];
+                });
 
-            // User not found
+            // Combine both
+            $users = $students->concat($teachers)->values();
+
             return response()->json([
                 'success' => true,
-                'exists' => false
+                'total_users' => $users->count(),
+                'students_count' => $students->count(),
+                'teachers_count' => $teachers->count(),
+                'users' => $users
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error checking user', [
+            Log::error('Error getting users for daily notifications', [
                 'error' => $e->getMessage(),
-                'telegram_chat_id' => $telegramChatId
+                'trace' => $e->getTraceAsString()
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Error checking user',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Register user with Telegram
-     * Searches by student_id or teacher_id
-     * Prevents duplicate registrations
-     */
-    public function registerTelegram(Request $request)
-    {
-        $request->validate([
-            'id' => 'required|string',
-            'telegram_chat_id' => 'required|string',
-            'telegram_username' => 'nullable|string'
-        ]);
-
-        $id = trim($request->id);
-        $telegramChatId = $request->telegram_chat_id;
-        $telegramUsername = $request->telegram_username;
-
-        try {
-            // Check if this telegram_chat_id is already registered
-            $existingStudent = Student::where('telegram_chat_id', $telegramChatId)->first();
-            $existingTeacher = Teacher::where('telegram_chat_id', $telegramChatId)->first();
-
-            if ($existingStudent || $existingTeacher) {
-                $existingUser = $existingStudent ?: $existingTeacher;
-                $existingId = $existingStudent ? $existingStudent->student_id : $existingTeacher->teacher_id;
-                
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Your Telegram account is already registered',
-                    'registered_id' => $existingId
-                ]);
-            }
-
-            // Try to find student by student_id
-            $student = Student::with('user')->where('student_id', $id)->first();
-
-            if ($student) {
-                // Check if this student_id is already linked to another telegram account
-                if ($student->telegram_chat_id && $student->telegram_chat_id !== $telegramChatId) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'This ID is already registered with another Telegram account',
-                        'existing_username' => $student->telegram_username ?? 'Unknown'
-                    ]);
-                }
-
-                // Update student's telegram info
-                $student->update([
-                    'telegram_chat_id' => $telegramChatId,
-                    'telegram_username' => $telegramUsername,
-                    'notification_enabled' => true
-                ]);
-
-                Log::info('Student registered with Telegram', [
-                    'student_id' => $student->student_id,
-                    'telegram_chat_id' => $telegramChatId
-                ]);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Registration successful',
-                    'user' => [
-                        'type' => 'student',
-                        'id' => $student->id,
-                        'student_id' => $student->student_id,
-                        'name' => $student->user->name ?? $student->name ?? 'Student',
-                        'notification_enabled' => true
-                    ]
-                ]);
-            }
-
-            // Try to find teacher by teacher_id
-            $teacher = Teacher::with('user')->where('teacher_id', $id)->first();
-
-            if ($teacher) {
-                // Check if this teacher_id is already linked to another telegram account
-                if ($teacher->telegram_chat_id && $teacher->telegram_chat_id !== $telegramChatId) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'This ID is already registered with another Telegram account',
-                        'existing_username' => $teacher->telegram_username ?? 'Unknown'
-                    ]);
-                }
-
-                // Update teacher's telegram info
-                $teacher->update([
-                    'telegram_chat_id' => $telegramChatId,
-                    'telegram_username' => $telegramUsername,
-                    'notification_enabled' => true
-                ]);
-
-                Log::info('Teacher registered with Telegram', [
-                    'teacher_id' => $teacher->teacher_id,
-                    'telegram_chat_id' => $telegramChatId
-                ]);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Registration successful',
-                    'user' => [
-                        'type' => 'teacher',
-                        'id' => $teacher->id,
-                        'teacher_id' => $teacher->teacher_id,
-                        'name' => $teacher->user->name ?? ($teacher->first_name . ' ' . $teacher->last_name),
-                        'notification_enabled' => true
-                    ]
-                ]);
-            }
-
-            // ID not found in either table
-            return response()->json([
-                'success' => false,
-                'message' => 'ID not found in our system. Please check your Student ID or Teacher ID and try again.'
-            ], 404);
-
-        } catch (\Exception $e) {
-            Log::error('Error registering telegram', [
-                'error' => $e->getMessage(),
-                'id' => $id,
-                'telegram_chat_id' => $telegramChatId
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Error during registration',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Get today's schedule for a user by telegram_chat_id
-     * For /today command
-     */
-    public function getTodayScheduleByChat(Request $request)
-    {
-        $telegramChatId = $request->query('telegram_chat_id');
-
-        if (!$telegramChatId) {
-            return response()->json([
-                'success' => false,
-                'message' => 'telegram_chat_id is required'
-            ], 400);
-        }
-
-        try {
-            $today = Carbon::now();
-            $todayName = strtolower($today->format('l'));
-
-            // Check if user is a student
-            $student = Student::with('user')->where('telegram_chat_id', $telegramChatId)->first();
-
-            if ($student) {
-                // Get student's enrolled class IDs
-                $enrolledClassIds = DB::table('class_student')
-                    ->where('student_id', $student->id)
-                    ->where('status', 'enrolled')
-                    ->pluck('class_model_id');
-
-                // Get classes scheduled for today
-                $todayClasses = ClassModel::with('teacher')
-                    ->whereIn('id', $enrolledClassIds)
-                    ->where('is_active', true)
-                    ->whereNotNull('schedule_days')
-                    ->whereNotNull('schedule_time')
-                    ->get()
-                    ->filter(function($class) use ($todayName) {
-                        if (is_array($class->schedule_days)) {
-                            $scheduleDays = array_map('strtolower', $class->schedule_days);
-                            return in_array($todayName, $scheduleDays);
-                        }
-                        return false;
-                    });
-
-                $classes = $todayClasses->map(function($class) {
-                    $time = Carbon::parse($class->schedule_time);
-                    return [
-                        'class_id' => $class->id,
-                        'time' => $time->format('g:i A'),
-                        'time_24h' => $time->format('H:i'),
-                        'class_name' => $class->class_name ?? $class->name ?? 'Unnamed Class',
-                        'class_code' => $class->class_code ?? 'N/A',
-                        'teacher_name' => $class->teacher ? ($class->teacher->user->name ?? 'TBA') : 'TBA',
-                        'location' => $class->room ?? 'TBA',
-                    ];
-                })->sortBy('time_24h')->values()->toArray();
-
-                return response()->json([
-                    'success' => true,
-                    'user' => [
-                        'type' => 'student',
-                        'name' => $student->user->name ?? $student->name ?? 'Student',
-                        'student_id' => $student->student_id
-                    ],
-                    'date' => $today->format('l, F j, Y'),
-                    'day_of_week' => $today->format('l'),
-                    'total_classes' => count($classes),
-                    'classes' => $classes
-                ]);
-            }
-
-            // Check if user is a teacher
-            $teacher = Teacher::with('user')->where('telegram_chat_id', $telegramChatId)->first();
-
-            if ($teacher) {
-                // Get classes taught by this teacher today
-                $todayClasses = ClassModel::where('teacher_id', $teacher->id)
-                    ->where('is_active', true)
-                    ->whereNotNull('schedule_days')
-                    ->whereNotNull('schedule_time')
-                    ->get()
-                    ->filter(function($class) use ($todayName) {
-                        if (is_array($class->schedule_days)) {
-                            $scheduleDays = array_map('strtolower', $class->schedule_days);
-                            return in_array($todayName, $scheduleDays);
-                        }
-                        return false;
-                    });
-
-                $classes = $todayClasses->map(function($class) {
-                    $time = Carbon::parse($class->schedule_time);
-                    $studentCount = DB::table('class_student')
-                        ->where('class_model_id', $class->id)
-                        ->where('status', 'enrolled')
-                        ->count();
-
-                    return [
-                        'class_id' => $class->id,
-                        'time' => $time->format('g:i A'),
-                        'time_24h' => $time->format('H:i'),
-                        'class_name' => $class->class_name ?? $class->name ?? 'Unnamed Class',
-                        'class_code' => $class->class_code ?? 'N/A',
-                        'location' => $class->room ?? 'TBA',
-                        'student_count' => $studentCount
-                    ];
-                })->sortBy('time_24h')->values()->toArray();
-
-                return response()->json([
-                    'success' => true,
-                    'user' => [
-                        'type' => 'teacher',
-                        'name' => $teacher->user->name ?? ($teacher->first_name . ' ' . $teacher->last_name),
-                        'teacher_id' => $teacher->teacher_id
-                    ],
-                    'date' => $today->format('l, F j, Y'),
-                    'day_of_week' => $today->format('l'),
-                    'total_classes' => count($classes),
-                    'classes' => $classes
-                ]);
-            }
-
-            // User not found
-            return response()->json([
-                'success' => false,
-                'message' => 'User not registered. Please send /start to register first.'
-            ], 404);
-
-        } catch (\Exception $e) {
-            Log::error('Error getting today schedule', [
-                'error' => $e->getMessage(),
-                'telegram_chat_id' => $telegramChatId
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Error fetching schedule',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Disable notifications for a user
-     * For /stop command
-     */
-    public function disableNotifications(Request $request)
-    {
-        $telegramChatId = $request->input('telegram_chat_id');
-
-        if (!$telegramChatId) {
-            return response()->json([
-                'success' => false,
-                'message' => 'telegram_chat_id is required'
-            ], 400);
-        }
-
-        try {
-            // Check students
-            $student = Student::where('telegram_chat_id', $telegramChatId)->first();
-            if ($student) {
-                $student->update(['notification_enabled' => false]);
-                
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Notifications disabled successfully',
-                    'user_type' => 'student'
-                ]);
-            }
-
-            // Check teachers
-            $teacher = Teacher::where('telegram_chat_id', $telegramChatId)->first();
-            if ($teacher) {
-                $teacher->update(['notification_enabled' => false]);
-                
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Notifications disabled successfully',
-                    'user_type' => 'teacher'
-                ]);
-            }
-
-            return response()->json([
-                'success' => false,
-                'message' => 'User not found'
-            ], 404);
-
-        } catch (\Exception $e) {
-            Log::error('Error disabling notifications', [
-                'error' => $e->getMessage(),
-                'telegram_chat_id' => $telegramChatId
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Error disabling notifications',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Enable notifications for a user
-     * For /resume command
-     */
-    public function enableNotifications(Request $request)
-    {
-        $telegramChatId = $request->input('telegram_chat_id');
-
-        if (!$telegramChatId) {
-            return response()->json([
-                'success' => false,
-                'message' => 'telegram_chat_id is required'
-            ], 400);
-        }
-
-        try {
-            // Check students
-            $student = Student::where('telegram_chat_id', $telegramChatId)->first();
-            if ($student) {
-                $student->update(['notification_enabled' => true]);
-                
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Notifications enabled successfully',
-                    'user_type' => 'student'
-                ]);
-            }
-
-            // Check teachers
-            $teacher = Teacher::where('telegram_chat_id', $telegramChatId)->first();
-            if ($teacher) {
-                $teacher->update(['notification_enabled' => true]);
-                
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Notifications enabled successfully',
-                    'user_type' => 'teacher'
-                ]);
-            }
-
-            return response()->json([
-                'success' => false,
-                'message' => 'User not found'
-            ], 404);
-
-        } catch (\Exception $e) {
-            Log::error('Error enabling notifications', [
-                'error' => $e->getMessage(),
-                'telegram_chat_id' => $telegramChatId
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Error enabling notifications',
+                'message' => 'Error retrieving users',
                 'error' => $e->getMessage()
             ], 500);
         }
