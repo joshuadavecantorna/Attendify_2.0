@@ -484,36 +484,58 @@ class N8NController extends Controller
             $student = Student::where('telegram_chat_id', $telegram_chat_id)->first();
             
             if ($student) {
-                // Get today's schedule for student
-                $today = Carbon::today();
-                $dayOfWeek = $today->format('l');
+                $today = Carbon::now();
+                $todayName = strtolower($today->format('l'));
 
-                $classes = DB::table('class_student')
-                    ->join('class_models', 'class_models.id', '=', 'class_student.class_model_id')
-                    ->join('teachers', 'teachers.id', '=', 'class_models.teacher_id')
-                    ->where('class_student.student_id', $student->id)
-                    ->where('class_student.status', 'enrolled')
-                    ->where('class_models.day_of_week', $dayOfWeek)
-                    ->select(
-                        'class_models.class_name',
-                        'class_models.class_code',
-                        'class_models.start_time',
-                        'class_models.end_time',
-                        'class_models.location',
-                        'teachers.first_name as teacher_first_name',
-                        'teachers.last_name as teacher_last_name'
-                    )
-                    ->orderBy('class_models.start_time')
+                // Get student's enrolled class IDs
+                $enrolledClassIds = DB::table('class_student')
+                    ->where('student_id', $student->id)
+                    ->where('status', 'enrolled')
+                    ->pluck('class_model_id');
+
+                // Get classes that have today in schedule_days
+                $todayClasses = ClassModel::with('teacher')
+                    ->whereIn('id', $enrolledClassIds)
+                    ->where('is_active', true)
+                    ->whereNotNull('schedule_days')
+                    ->whereNotNull('schedule_time')
                     ->get()
-                    ->map(function($class) {
-                        return [
-                            'class_name' => $class->class_name,
-                            'class_code' => $class->class_code,
-                            'time' => Carbon::parse($class->start_time)->format('g:i A') . ' - ' . Carbon::parse($class->end_time)->format('g:i A'),
-                            'location' => $class->location,
-                            'teacher_name' => trim($class->teacher_first_name . ' ' . $class->teacher_last_name)
-                        ];
+                    ->filter(function($class) use ($todayName) {
+                        if (is_array($class->schedule_days)) {
+                            $scheduleDays = array_map('strtolower', $class->schedule_days);
+                            return in_array($todayName, $scheduleDays);
+                        }
+                        return false;
                     });
+
+                $classes = $todayClasses->map(function($class) {
+                    $className = $class->class_name ?? $class->name ?? 'Unnamed Class';
+                    $teacherName = 'TBA';
+                    if ($class->teacher) {
+                        $teacherName = trim(($class->teacher->first_name ?? '') . ' ' . ($class->teacher->last_name ?? ''));
+                    }
+
+                    $scheduleTime = 'TBA';
+                    $scheduleTime24h = '00:00';
+                    if ($class->schedule_time) {
+                        try {
+                            $time = Carbon::parse($class->schedule_time);
+                            $scheduleTime = $time->format('g:i A');
+                            $scheduleTime24h = $time->format('H:i');
+                        } catch (\Exception $e) {
+                            // Keep defaults
+                        }
+                    }
+
+                    return [
+                        'time' => $scheduleTime,
+                        'time_24h' => $scheduleTime24h,
+                        'class_name' => $className,
+                        'class_code' => $class->class_code ?? 'N/A',
+                        'teacher_name' => $teacherName,
+                        'location' => $class->room ?? 'TBA',
+                    ];
+                })->sortBy('time_24h')->values();
 
                 return response()->json([
                     'success' => true,
@@ -532,28 +554,52 @@ class N8NController extends Controller
             $teacher = \App\Models\Teacher::where('telegram_chat_id', $telegram_chat_id)->first();
             
             if ($teacher) {
-                // Get today's schedule for teacher
-                $today = Carbon::today();
-                $dayOfWeek = $today->format('l');
+                $today = Carbon::now();
+                $todayName = strtolower($today->format('l'));
 
-                $classes = ClassModel::where('teacher_id', $teacher->id)
-                    ->where('day_of_week', $dayOfWeek)
-                    ->orderBy('start_time')
+                // Get classes taught by teacher today
+                $todayClasses = ClassModel::where('teacher_id', $teacher->id)
+                    ->where('is_active', true)
+                    ->whereNotNull('schedule_days')
+                    ->whereNotNull('schedule_time')
                     ->get()
-                    ->map(function($class) {
-                        $studentCount = DB::table('class_student')
-                            ->where('class_model_id', $class->id)
-                            ->where('status', 'enrolled')
-                            ->count();
-
-                        return [
-                            'class_name' => $class->class_name,
-                            'class_code' => $class->class_code,
-                            'time' => Carbon::parse($class->start_time)->format('g:i A') . ' - ' . Carbon::parse($class->end_time)->format('g:i A'),
-                            'location' => $class->location,
-                            'student_count' => $studentCount
-                        ];
+                    ->filter(function($class) use ($todayName) {
+                        if (is_array($class->schedule_days)) {
+                            $scheduleDays = array_map('strtolower', $class->schedule_days);
+                            return in_array($todayName, $scheduleDays);
+                        }
+                        return false;
                     });
+
+                $classes = $todayClasses->map(function($class) {
+                    $className = $class->class_name ?? $class->name ?? 'Unnamed Class';
+                    
+                    $scheduleTime = 'TBA';
+                    $scheduleTime24h = '00:00';
+                    if ($class->schedule_time) {
+                        try {
+                            $time = Carbon::parse($class->schedule_time);
+                            $scheduleTime = $time->format('g:i A');
+                            $scheduleTime24h = $time->format('H:i');
+                        } catch (\Exception $e) {
+                            // Keep defaults
+                        }
+                    }
+
+                    $studentCount = DB::table('class_student')
+                        ->where('class_model_id', $class->id)
+                        ->where('status', 'enrolled')
+                        ->count();
+
+                    return [
+                        'time' => $scheduleTime,
+                        'time_24h' => $scheduleTime24h,
+                        'class_name' => $className,
+                        'class_code' => $class->class_code ?? 'N/A',
+                        'location' => $class->room ?? 'TBA',
+                        'student_count' => $studentCount
+                    ];
+                })->sortBy('time_24h')->values();
 
                 return response()->json([
                     'success' => true,
