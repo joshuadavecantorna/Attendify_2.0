@@ -42,8 +42,25 @@ Route::prefix('n8n')->group(function () {
     // Get specific student's today schedule
     Route::get('/students/{studentId}/schedule/today', [N8NController::class, 'getStudentTodaySchedule']);
     
-    // Update telegram chat ID
+    // Update telegram chat ID (deprecated - use /register instead)
     Route::post('/students/telegram/update', [N8NController::class, 'updateTelegramChatId']);
+    
+    // === NEW TELEGRAM BOT ENDPOINTS ===
+    
+    // Check if user exists by telegram_chat_id (for /start command)
+    Route::get('/check-user', [N8NController::class, 'checkUser']);
+    
+    // Register user with telegram (searches by student_id or teacher_id)
+    Route::post('/register', [N8NController::class, 'registerTelegram']);
+    
+    // Get today's schedule by telegram_chat_id (for /today command)
+    Route::get('/today-schedule', [N8NController::class, 'getTodayScheduleByChat']);
+    
+    // Disable notifications (for /stop command)
+    Route::post('/notifications/disable', [N8NController::class, 'disableNotifications']);
+    
+    // Enable notifications (for /resume command)
+    Route::post('/notifications/enable', [N8NController::class, 'enableNotifications']);
 });
 
 // AI Chatbot Routes

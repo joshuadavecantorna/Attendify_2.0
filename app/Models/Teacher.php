@@ -23,11 +23,16 @@ class Teacher extends Model
         'position',
         'salary',
         'profile_picture',
-        'is_active'
+        'is_active',
+        'telegram_chat_id',
+        'telegram_username',
+        'preferred_language',
+        'notification_enabled'
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'notification_enabled' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
