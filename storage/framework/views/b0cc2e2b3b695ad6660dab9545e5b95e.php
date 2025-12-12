@@ -2,8 +2,11 @@
 <html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>"  class="<?php echo \Illuminate\Support\Arr::toCssClasses(['dark' => ($appearance ?? 'system') == 'dark']); ?>">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
         <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
         
         <script>
@@ -24,14 +27,27 @@
         <style>
             html {
                 background-color: oklch(1 0 0);
+                /* Prevent text size adjustment on orientation change (iOS) */
+                -webkit-text-size-adjust: 100%;
             }
 
             html.dark {
                 background-color: oklch(0.145 0 0);
             }
+            
+            /* Prevent iOS bounce scroll */
+            body {
+                overscroll-behavior-y: contain;
+            }
+            
+            /* Better font rendering for mobile */
+            * {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
         </style>
 
-        <title inertia><?php echo e(config('app.name', 'Laravel')); ?></title>
+        <title inertia>Attendify</title>
 
         <link rel="icon" href="/favicon.ico" sizes="any">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
