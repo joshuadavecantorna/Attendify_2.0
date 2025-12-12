@@ -48,6 +48,13 @@ Route::prefix('n8n')->group(function () {
     // Update telegram chat ID
     Route::post('/students/telegram/update', [N8NController::class, 'updateTelegramChatId']);
     
+    // Telegram Bot Registration & Commands
+    Route::get('/check-user', [N8NController::class, 'checkUser']);
+    Route::post('/register', [N8NController::class, 'registerTelegram']);
+    Route::get('/today-schedule', [N8NController::class, 'getTodayScheduleByChat']);
+    Route::post('/notifications/disable', [N8NController::class, 'disableNotifications']);
+    Route::post('/notifications/enable', [N8NController::class, 'enableNotifications']);
+    
     // Get all users with notifications enabled (for daily 6 AM scheduler)
     Route::get('/daily-notifications/users', [N8NController::class, 'getAllUsersForDailyNotifications']);
 });
