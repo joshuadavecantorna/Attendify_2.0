@@ -28,6 +28,6 @@ const isDark = computed(() => {
         :src="isDark ? '/dark.png' : '/light.png'" 
         :class="className" 
         v-bind="$attrs"
-        alt="Attendify Logo"
+        alt="AttendSynx Logo"
     />
 </template>

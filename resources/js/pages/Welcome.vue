@@ -4,7 +4,7 @@ import { Head, Link } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <Head title="Attendify - Smart Attendance Management">
+    <Head title="AttendSynx - Smart Attendance Management">
         <link rel="preconnect" href="https://rsms.me/" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     </Head>
@@ -19,7 +19,7 @@ import { Head, Link } from '@inertiajs/vue3';
                         </svg>
                     </div>
                     <div class="min-w-0">
-                        <h1 class="text-xl font-bold text-gray-900 dark:text-white leading-tight">Attendify</h1>
+                        <h1 class="text-xl font-bold text-gray-900 dark:text-white leading-tight">AttendSynx</h1>
                         <p class="text-sm text-gray-600 dark:text-gray-300 leading-snug">Smart Attendance Management</p>
                     </div>
                 </div>
@@ -61,7 +61,7 @@ import { Head, Link } from '@inertiajs/vue3';
                         </svg>
                     </div>
                     <h1 class="text-5xl font-bold text-gray-900 dark:text-white mb-4">
-                        Attendify
+                        AttendSynx
                     </h1>
                     <p class="text-xl text-gray-600 dark:text-gray-300 mb-4">
                         Smart Attendance Management System
@@ -387,7 +387,7 @@ import { Head, Link } from '@inertiajs/vue3';
         <footer class="mt-20 px-6 py-8 border-t border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
             <div class="max-w-7xl mx-auto text-center">
                 <p class="text-gray-600 dark:text-gray-400">
-                    © 2024 Attendify - Smart Attendance Management System
+                    © 2024 AttendSynx - Smart Attendance Management System
                 </p>
             </div>
         </footer>
