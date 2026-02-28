@@ -23,7 +23,39 @@ class AIComposer
         $resultsJson = $this->toJson($results);
         $intent = $retrieval['intent'] ?? 'unknown';
 
-        $prompt = <<<PROMPT
+        // Check if this is a general question or specific data query
+        $isGeneralQuestion = ($intent === 'unknown' || (isset($results['type']) && $results['type'] === 'general'));
+        
+        if ($isGeneralQuestion) {
+            // For general questions, use a more flexible prompt
+            $prompt = <<<PROMPT
+# SYSTEM ROLE
+You are "Attendify Bot", a friendly and helpful AI assistant for Attendify - an attendance management system for schools.
+
+# USER CONTEXT
+- Name: {$userName}
+- Role: {$role}
+
+# USER QUESTION
+"{$question}"
+
+# INSTRUCTIONS
+1. **Answer helpfully** - Provide useful information to the best of your ability
+2. **Be conversational** - Be friendly, natural, and engaging
+3. **Be relevant** - If the question relates to Attendify (attendance, schedules, classes), explain what you can help with
+4. **Be honest** - If you don't have specific user data, say so and offer general guidance
+5. **Keep it concise** - Aim for 2-4 sentences unless more detail is requested
+
+# OUTPUT FORMAT
+- **Plain English only** - NO code blocks, NO JSON, NO raw arrays
+- **Use natural formatting** - Bullets (•) for lists if needed
+- **Be conversational** - Write like you're helping a friend
+
+# YOUR ANSWER
+PROMPT;
+        } else {
+            // For specific data queries, use structured prompt
+            $prompt = <<<PROMPT
 # SYSTEM ROLE
 You are "Attendify Bot", a friendly and helpful AI assistant for the Attendify attendance management system.
 
@@ -142,6 +174,7 @@ Bot: "Your Application Development teacher is Prof. Sarah Martinez. The class me
 
 # YOUR ANSWER
 PROMPT;
+        }
 
         // Truncate if too long
         if (strlen($prompt) > $truncateChars) {

@@ -74,8 +74,12 @@ class RetrievalPlanner
                 return $this->retrieveHelpInfo($q, $userContext, $plan);
             
             default:
-                $plan['executed_query'] = null;
-                return ['message' => 'I understand your question, but I need more specific information to help you.'];
+                // For general questions, allow AI to answer without specific data retrieval
+                $plan['executed_query'] = 'general_question';
+                return [
+                    'type' => 'general',
+                    'message' => 'No specific data retrieval needed - answering from general knowledge',
+                ];
         }
     }
 
