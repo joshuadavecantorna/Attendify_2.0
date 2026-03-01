@@ -6,6 +6,15 @@ use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\FilesController;
 use App\Http\Controllers\TelegramWebhookController;
 use App\Http\Controllers\Api\N8NController;
+use App\Http\Controllers\Api\AuthController;
+
+// ─── Mobile Auth ────────────────────────────────────────────────────────────
+Route::post('/login',  [AuthController::class, 'login']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user',    [AuthController::class, 'user']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
 
 // Auth user endpoint
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
