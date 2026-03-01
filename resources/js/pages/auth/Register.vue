@@ -29,8 +29,8 @@ const getRoleIcon = (roleValue: string) => {
 </script>
 
 <template>
-    <AuthBase title="Join Attendify" description="Create your account to get started with smart attendance management">
-        <Head title="Register - Attendify" />
+    <AuthBase title="Join AttendSynx" description="Create your account to get started with smart attendance management">
+        <Head title="Register - AttendSynx" />
 
         <Form
             v-bind="RegisteredUserController.store.form()"

@@ -57,7 +57,7 @@ const footerNavItems: NavItem[] = [
                 <AppLogo class="size-4" />
               </div>
               <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-semibold">Attendify</span>
+                <span class="truncate font-semibold">AttendSynx</span>
                 <span class="truncate text-xs">Student Portal</span>
               </div>
             </Link>

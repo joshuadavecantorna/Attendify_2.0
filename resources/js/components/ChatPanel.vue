@@ -17,7 +17,7 @@
     </div>
 
     <div class="composer">
-      <textarea v-model="input" @keydown.enter.exact.prevent="onSend" placeholder="Ask the Attendify bot..." rows="2"></textarea>
+      <textarea v-model="input" @keydown.enter.exact.prevent="onSend" placeholder="Ask the AttendSynx bot..." rows="2"></textarea>
       <div class="controls">
         <label><input type="checkbox" v-model="useStream" /> Stream response</label>
         <button @click="onSend" :disabled="sending">Send</button>

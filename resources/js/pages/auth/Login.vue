@@ -34,8 +34,8 @@ const getRoleIcon = (roleValue: string) => {
 </script>
 
 <template>
-    <AuthBase title="Welcome to Attendify" description="Smart Attendance Management System - Enter your credentials to access your account">
-        <Head title="Log in - Attendify" />
+    <AuthBase title="Welcome to AttendSynx" description="Smart Attendance Management System - Enter your credentials to access your account">
+        <Head title="Log in - AttendSynx" />
 
 
         <div v-if="status" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -136,7 +136,7 @@ const getRoleIcon = (roleValue: string) => {
                     :disabled="processing || !selectedRole"
                 >
                     <LoaderCircle v-if="processing" class="w-4 h-4 animate-spin mr-2" />
-                    <span v-if="!processing">Sign In to Attendify</span>
+                    <span v-if="!processing">Sign In to AttendSynx</span>
                     <span v-else>Signing you in...</span>
                 </Button>
             </div>
@@ -148,7 +148,7 @@ const getRoleIcon = (roleValue: string) => {
                         <div class="w-full border-t border-gray-200"></div>
                     </div>
                     <div class="relative flex justify-center text-xs uppercase">
-                        <span class="bg-background px-2 text-muted-foreground">New to Attendify?</span>
+                        <span class="bg-background px-2 text-muted-foreground">New to AttendSynx?</span>
                     </div>
                 </div>
                 <div class="mt-4">

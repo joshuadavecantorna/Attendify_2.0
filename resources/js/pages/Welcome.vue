@@ -362,7 +362,7 @@ import { Head, Link } from '@inertiajs/vue3';
                 <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-12 text-white">
                     <h2 class="text-3xl font-bold mb-4">Ready to Streamline Your Attendance Management?</h2>
                     <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-                        Join educators who have simplified their attendance tracking with Attendify's comprehensive solution
+                        Join educators who have simplified their attendance tracking with AttendSynx's comprehensive solution
                     </p>
                     <div class="flex flex-col gap-4 justify-center sm:flex-row">
                         <Link
